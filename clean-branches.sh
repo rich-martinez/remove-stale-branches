@@ -5,7 +5,9 @@ echo "What is your origin remote name?"
 read origin
 
 readonly branches="$(git branch)"
-readonly remoteBranches=$(git ls-remote --heads origin | sed 's?.*refs/heads/??')
+readonly remoteBranches=$(git ls-remote --heads $origin | sed 's?.*refs/heads/??')
+
+echo $remoteBranches
 
 for i in $branches
 do
