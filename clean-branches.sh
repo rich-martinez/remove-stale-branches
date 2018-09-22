@@ -32,16 +32,30 @@ printBranchRemovalOptions() {
   " "$mainBranch" "$mainBranch"
 }
 
-printAvailableBranches
-printBranchRemovalOptions
-printf "\nPlease choose which of the branches to remove from list above: (!%s)\n" "$mainBranch"
-exit 0
+showOptions() {
+  printAvailableBranches
+  printBranchRemovalOptions
+  printf "\nPlease choose which of the local branches to remove from list above: (!%s)\n" "$mainBranch"
+}
+
+showOptions
 
 read selectedOption
 readonly selectedOptionLowerCase="$(echo $selectedOption|tr '[:upper:]' '[:lower:]')"
 
 case "$selectedOptionLowerCase" in
-    *)
+  all)
+    branchCounter="1"
+    for branch in $branchNames
+    do
+      $(git branch -D $branch)
+      branchCounter=$((branchCounter + 1))
+    done
+  none)
+    continue
+  *)
+    printf "%s is not an available option." "$selectedOptionLowerCase"
+    showOptions
 esac
 if [ "$selectedOptionLowerCase" = "n" ]; then
     printf "\nPlease choose the branches you would like to remove.\n"
