@@ -24,8 +24,10 @@ printAvailableBranches() {
 
 printBranchRemovalOptions() {
   printf "\nAvailable Options:
-    [associated branch number(s)] - This is the number key associated with the branch name.\n
-      Example: 1,2,5\n
+    [associated branch number(s)] - This is a brackets list/array populated with number(s) associated with a branch name.\n
+      Example: [1,2,5]\n
+    ![associated branch number(s)] - This is a brackets list/array, preceded by and exclaimation point, populated with number(s) associated with a branch name.\n
+      Example: ![1,2,5]
     all - This will select all the branches to be removed.\n
     none - This will select no branches to be removed.\n
     !%s - Do not remove the %s branch but remove all the other branches.\n
@@ -36,30 +38,49 @@ showOptions() {
   printAvailableBranches
   printBranchRemovalOptions
   printf "\nPlease choose which of the local branches to remove from list above: (!%s)\n" "$mainBranch"
+  read selectedOption
 }
 
+unexpectedOption() {
+  printf "%s is not an available option.\n" "$1"
+  showOptions
+}
+
+# set up a command prompt loop that runs this function and then the condtions
 showOptions
 
-read selectedOption
-readonly selectedOptionLowerCase="$(echo $selectedOption|tr '[:upper:]' '[:lower:]')"
+readonly sanitizedSelectedOption="$(echo $selectedOption|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')"
+delcare sanitizedSelectedOptionList=""
+# Did the user provide a list?
+if [ ${selectedOption:${#selectedOption}-1} = "]" ]; then
+  # remove suffix of '['
+  sanitizedSelectedOptionList="${selectedOption//']'/}"
 
-case "$selectedOptionLowerCase" in
-  all)
-    branchCounter="1"
-    for branch in $branchNames
-    do
-      $(git branch -D $branch)
-      branchCounter=$((branchCounter + 1))
-    done
-  none)
-    continue
-  *)
-    printf "%s is not an available option." "$selectedOptionLowerCase"
-    showOptions
-esac
-if [ "$selectedOptionLowerCase" = "n" ]; then
-    printf "\nPlease choose the branches you would like to remove.\n"
-    printf "\nPossible Options:\n"
+  # Is it a list of branches to keep?
+  if [ "${selectedOption:0:2}" = "!["  ]; then
+    # remove prefixe from list
+     sanitizedSelectedOptionList="${sanitizedSelectedOptionList//'!['/}"
+
+  # Is it a list of branches to remove?
+  elif [ "${selectedOption:0:1}" = "["  ]; then
+    # remove prefix from list
+     sanitizedSelectedOptionList="${sanitizedSelectedOptionList//'['/}"
+  fi
+
+  # If the list is not prefixed with '![' or '[' then provide an error message and rerun the prompt
+  unexpectedOption selectedOption
+elif [ "$selectedOption" = "all" ]; then
+  for branch in $branchNames
+  do
+    $(git branch -D $branch)
+    branchCounter=$((branchCounter + 1))
+  done
+elif [ "$selectedOption" = "none" ]; then
+  printf "Continuing...\n"
+elif [ "$selectedOption" = "!$mainBranch" ]; then
+  # remove the $mainBranch from $branchNames and then delete the remain branches using git.
+else
+  unexpectedOption selectedOption
 fi
 
 #read branchesToDelete
