@@ -38,16 +38,10 @@ showOptions() {
   printAvailableBranches
   printBranchRemovalOptions
   printf "\nPlease choose which of the local branches to remove from list above: (!%s)\n" "$mainBranch"
-  read selectedOption
 }
 
-unexpectedOption() {
-  printf "%s is not an available option.\n" "$1"
-  showOptions
-}
-
-# set up a command prompt loop that runs this function and then the condtions
 showOptions
+read selectedOption
 
 readonly sanitizedSelectedOption="$(echo $selectedOption|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')"
 delcare sanitizedSelectedOptionList=""
@@ -80,7 +74,8 @@ elif [ "$selectedOption" = "none" ]; then
 elif [ "$selectedOption" = "!$mainBranch" ]; then
   # remove the $mainBranch from $branchNames and then delete the remain branches using git.
 else
-  unexpectedOption selectedOption
+  printf "%s is not an available option.\n" "$selectedOption"
+  exit 1
 fi
 
 #read branchesToDelete
