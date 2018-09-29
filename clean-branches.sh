@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 # This is meant to optionally store the main branch that everything else is based off of (e.g. master)
-readonly mainBranch="${1:-'master'}"
+readonly mainBranch="${1:-master}"
 readonly branches="$(git branch)"
-declare branchNames="${branches//[*| ]/}"
+declare -a branchNames="${branches//[*| ]/}"
 
 printAvailableBranches() {
-  printf "\nAvailable Branches:\n"
+  printf "\nBranches Available for Removal:\n"
   theBranchNames="$1"
   branchCounter="1"
   for branch in $theBranchNames
@@ -18,18 +18,20 @@ printAvailableBranches() {
 
 printBranchRemovalOptions() {
   printf "\nAvailable Options:
-    [associated branch number(s)] - This is a brackets list/array populated with number(s) associated with a branch name.\n
-      Example: [1,2,5]\n
-    ![associated branch number(s)] - This is a brackets list/array, preceded by and exclaimation point, populated with number(s) associated with a branch name.\n
-      Example: ![1,2,5]
-    all - This will select all the branches to be removed.\n
+    [associated branch number(s)] - This is a brackets list/array populated with branches to be removed by associated branch number. Example: [1,2,5]\n
+    ![associated branch number(s)] - This is a brackets list/array, preceded by and exclaimation point, populated with branches to skip removing by associated branch number. Example: ![1,2,5]
     none - This will select no branches to be removed.\n
+    all - This will select all the branches to be removed.\n
     !%s - Do not remove the %s branch but remove all the other branches.\n
   " "$mainBranch" "$mainBranch"
 }
 
 showOptions() {
-  availableBranchNames="$1"
+  declare -a availableBranchNames="($1)"
+  if [ "${#availableBranchNames[@]}" -eq "1" ]; then
+    printf "'%s' can not be removed because it is the only local branch\n" "${availableBranchNames[0]}"
+    exit 1
+  fi
 
   printAvailableBranches "$availableBranchNames"
   printBranchRemovalOptions
@@ -116,7 +118,6 @@ askForRemoteRepository() {
 }
 
 askForRemoteRepository
-
 
 
 #read branchesToDelete
