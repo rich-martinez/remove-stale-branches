@@ -2,21 +2,14 @@
 
 # This is meant to optionally store the main branch that everything else is based off of (e.g. master)
 readonly mainBranch="${1:-'master'}"
-
-#save the origin remote name
-printf "What is your origin remote name?\n"
-read origin
-
 readonly branches="$(git branch)"
 declare branchNames="${branches//[*| ]/}"
-readonly remoteBranches=$(git ls-remote --heads $origin | sed 's?.*refs/heads/??')
-declare remoteBrancheNames="${remoteBranches//[*| ]/}"
 
 printAvailableBranches() {
   printf "\nAvailable Branches:\n"
-
+  theBranchNames="$1"
   branchCounter="1"
-  for branch in $branchNames
+  for branch in $theBranchNames
   do
     printf "    %s: %s\n" "$branchCounter" "$branch"
     branchCounter=$((branchCounter + 1))
@@ -36,12 +29,14 @@ printBranchRemovalOptions() {
 }
 
 showOptions() {
-  printAvailableBranches
+  availableBranchNames="$1"
+
+  printAvailableBranches "$availableBranchNames"
   printBranchRemovalOptions
-  printf "\nPlease choose which of the local branches to remove from list above: (!%s)\n" "$mainBranch"
+  printf "\nPlease choose which of the branches to remove from list above: (!%s)\n" "$mainBranch"
 }
 
-showOptions
+showOptions "$branchNames"
 read selectedOption
 
 readonly sanitizedSelectedOption="$(echo $selectedOption|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')|tr ',' '[:space:]')"
@@ -65,7 +60,7 @@ filterBranchNames() {
     elif [ "${selectedOption:0:1}" = "["  ]; then
       # remove prefix from list
       sanitizedSelectedOptionList="${sanitizedSelectedOptionList//'['/}"
-      for branchName in branchNames
+      for branchName in $branchNames
       do
         # if the current branch name is not in the sanitizedSelectedOptionList then remove it from the
         # branchNames list
@@ -87,12 +82,11 @@ filterBranchNames() {
   fi
 }
 
-
-
 removeSelectedBranches() {
+  # pass in an argument of the type of branches (e.g. remote branches, local branches) to filterBranchNames
   filterBranchNames
 
-  for branch in branchNames
+  for branch in $branchNames
   do
     # git branch -D "$branch"
   done
@@ -101,6 +95,29 @@ removeSelectedBranches() {
 removeSelectedBranches
 
 printf "Continuing to remote branches...\n"
+
+askForRemoteRepository() {
+  printf "Do you have an associated remote repository?(Y\n)\n"
+  read hasRemote
+  readonly sanitizedHasRemoteOption="$(echo $selectedOption|tr '[:upper:]' '[:lower:]')"
+  case "$hasRemote" in
+    y)
+      #save the origin remote name
+      printf "What is your origin remote name?\n"
+      read originRemote
+      readonly remoteBranches="$(git ls-remote --heads $originRemote | sed 's?.*refs/heads/??')"
+      declare remoteBranchNames="${remoteBranches//[*| ]/}"
+      showOptions "$remoteBranchNames"
+    n)
+      printf "Skipping removal of any remote branches."
+    *)
+      printf "%s is not in available option" "$hasRemote"
+      ;;
+}
+
+askForRemoteRepository
+
+
 
 #read branchesToDelete
 
