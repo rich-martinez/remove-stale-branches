@@ -37,7 +37,7 @@ printAvailableBranches() {
 printBranchRemovalOptions() {
   printf "\nAvailable Options:
     [associated branch number(s)] - This is a brackets list/array populated with branches to be removed by associated branch number. Example: [1,2,5]\n
-    ![associated branch number(s)] - This is a brackets list/array, preceded by and exclaimation point, populated with branches to skip removing by associated branch number. Example: ![1,2,5]
+    ![associated branch number(s)] - This is a brackets list/array, preceded by and exclaimation point, populated with branches to skip removing by associated branch number. Example: ![1,2,5]\n
     all - This will select all the branches to be removed.\n
   "
 }
@@ -54,7 +54,7 @@ showOptions() {
 }
 
 filterBranchNames() {
-  readonly sanitizedSelectedOption="$(echo $selectedOption|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')|tr ',' '[:space:]')"
+  readonly sanitizedSelectedOption="$(echo $selectedOption|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]'|tr , '[:space:]')"
 
   # Did the user provide a list?
   if [ ${sanitizedSelectedOption:${#sanitizedSelectedOption}-1} = "]" ]; then
@@ -81,15 +81,16 @@ filterBranchNames() {
         # branchNames list
         printf "Pretend filter of current branch name from list.\n"
       done
+    else
+      printf "The list/array must be prefixed with '![' or '[', %s is not a valid option.\n" "$selectedOption"
+      exit 1
     fi
-    # If the list is not prefixed with '![' or '[' then provide an error message and rerun the prompt
-    unexpectedOption selectedOption
   elif [ "$sanitizedSelectedOption" = "all" ]; then
     printf "All branches will be removed.\n"
-  fi
-
+  else
     printf "%s is not an available option.\n" "$selectedOption"
     exit 1
+  fi
 }
 
 removeSelectedBranches() {
@@ -103,12 +104,13 @@ removeSelectedBranches() {
 
 runLocalBranchRemoval() {
   checkForGit
+  readonly defaultMainBranch="master"
 
-  printf "Please choose the main branch which will not be removed: (master)"
+  printf "Please choose the main branch which will not be removed: (%s)" "$defaultMainBranch"
   read mainBranch
   declare sanitizedMainBranch="$(echo $mainBranch|tr -d '[:space:]')"
   if [ -z "$sanitizedMainBranch" ]; then
-    sanitizedMainBranch="master"
+    sanitizedMainBranch="$defaultMainBranch"
   fi
 
   readonly branches="$(git branch)"
@@ -123,7 +125,7 @@ runLocalBranchRemoval() {
   readonly sanitizedLocalBranchRemovalOption="$(echo $removeLocalBranches|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')"
   if [ -z "$sanitizedLocalBranchRemovalOption" ] || [ "$sanitizedLocalBranchRemovalOption" = "y" ]; then
     showOptions "$branchesAvailableForRemoval"
-    printf "\nPlease choose which of the branches to remove from list above: (all)"
+    printf "\nPlease enter which of the branches to remove from list above: (all)"
     read selectedOption
 
     filterBranchNames
