@@ -129,9 +129,12 @@ runLocalBranchRemoval() {
     filterBranchNames
 
     removeSelectedBranches
-  else
+  elif [ "$sanitizedLocalBranchRemovalOption" = "n" ]; then
     # Don't do anything with local branches and go to next prompt.
     return
+  else
+    printf "\n'%s' is an invalid option.\n" "$sanitizedLocalBranchRemovalOption"
+    exit 1
   fi
 }
 
