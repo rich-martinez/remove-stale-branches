@@ -58,39 +58,45 @@ showOptions() {
 }
 
 filterBranchNames() {
+  declare -a branchesAvailableForRemoval="($@)"
   readonly sanitizedSelectedOption="$(echo $selectedOption|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]'|tr , '[:space:]')"
 
+  if [ -z "$sanitizedSelectedOption" ] || [ "$sanitizedSelectedOption" = "all" ]; then
+    printf "\nAll branches will be removed.\n"
   # Did the user provide a list?
-  if [ ${sanitizedSelectedOption:${#sanitizedSelectedOption}-1} = "]" ]; then
+  elif [ ${sanitizedSelectedOption:${#sanitizedSelectedOption}-1} = "]" ]; then
     # remove suffix of '['
     sanitizedSelectedOptionList="${sanitizedSelectedOption//']'/}"
 
     # Is it a list of branches to keep?
     if [ "${sanitizedSelectedOption:0:2}" = "!["  ]; then
       # remove prefixes from list
-      sanitizedSelectedOptionList="${sanitizedSelectedOptionList//'!['/}"
-      for branchNumber in $sanitizedSelectedOptionList;
+      declare -a sanitizedSelectedOptionList="(${sanitizedSelectedOptionList//'!['/})"
+      for branchNumber in ${sanitizedSelectedOptionList[@]};
       do
-        # remove current item from the branchNames array
-        printf "Pretend removing current branch from the list of available branch names.\n"
-      done
+        if ! [[ "$branchNumber" =~ "^[0-9]+$" ]] ; then
+          printf "The list of branches must contain only numbers. %s is not a number." "$branchNumber"
+        fi
+        declare -i currentElementNumber="$(($branchNumber + 1))"
+        declare currentBranch="${availableBranchNames[$currentElementNumber]}"
 
+        # remove current item from the branchesAvailableForRemoval array
+        printf "Pretend filtering %s from the branchesAvailableForRemoval.\n" "$currentBranch"
+      done
     # Is it a list of branches to remove?
     elif [ "${selectedOption:0:1}" = "["  ]; then
       # remove prefix from list
       sanitizedSelectedOptionList="${sanitizedSelectedOptionList//'['/}"
-      for branchName in $branchNames;
+      for branchName in ${branchesAvailableForRemoval[@]};
       do
         # if the current branch name is not in the sanitizedSelectedOptionList then remove it from the
-        # branchNames list
-        printf "Pretend filter of current branch name from list.\n"
+        # branchesAvailableForRemoval list
+        printf "Pretend filter of %s name from list.\n" "$branchName"
       done
     else
       printf "The list/array must be prefixed with '![' or '[', %s is not a valid option.\n" "$selectedOption"
       exit 1
     fi
-  elif [ "$sanitizedSelectedOption" = "all" ]; then
-    printf "All branches will be removed.\n"
   else
     printf "%s is not an available option.\n" "$selectedOption"
     exit 1
@@ -132,7 +138,7 @@ runLocalBranchRemoval() {
     printf "\nPlease enter which of the branches to remove from list above: (all) "
     read selectedOption
 
-    filterBranchNames
+    filterBranchNames "${branchesAvailableForRemoval[@]}"
 
     removeSelectedBranches
   elif [ "$sanitizedLocalBranchRemovalOption" = "n" ]; then
