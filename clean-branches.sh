@@ -9,11 +9,12 @@ checkForGit() {
 
 checkExistenceOfMainBranch() {
   readonly mainBranch="$1"
-  readonly branchNames="$2"
+  # all arguments passed into function starting at the 2nd position
+  readonly allBranchNames="(${@:2})"
 
   # Check that main branch is a branch in this repository
-  if [[ ! "${branchNames[@]}" =~ "$mainBranch" ]]; then
-      printf "%s is not a branch for this repository." "$mainBranch"
+  if [[ ! "${allBranchNames[@]}" =~ "$mainBranch" ]]; then
+      printf "%s is not a branch in this repository.\n" "$mainBranch"
       exit 1
   fi
 }
@@ -25,9 +26,11 @@ checkoutTheMainBranch() {
 
 printAvailableBranches() {
   printf "\nBranches Available for Removal:\n"
-  declare -a theBranchNames="($1)"
-  branchCounter="1"
-  for branch in $theBranchNames
+
+  declare -a availableBranchNames="($@)"
+  declare -i branchCounter="1"
+
+  for branch in ${availableBranchNames[@]}
   do
     printf "    %s: %s\n" "$branchCounter" "$branch"
     branchCounter=$((branchCounter + 1))
@@ -43,13 +46,14 @@ printBranchRemovalOptions() {
 }
 
 showOptions() {
-  declare -a availableBranchNames="($1)"
+  # all arguments starting from the first '$@'
+  declare -a availableBranchNames="($@)"
   if [ "${#availableBranchNames[@]}" -eq "0" ]; then
     printf "No local branches can be removed because there is only one local branch\n"
     exit 1
   fi
 
-  printAvailableBranches "$availableBranchNames"
+  printAvailableBranches "${availableBranchNames[@]}"
   printBranchRemovalOptions
 }
 
@@ -106,26 +110,26 @@ runLocalBranchRemoval() {
   checkForGit
   readonly defaultMainBranch="master"
 
-  printf "Please choose the main branch which will not be removed: (%s)" "$defaultMainBranch"
+  printf "Please choose the main branch which will not be removed: (%s) " "$defaultMainBranch"
   read mainBranch
   declare sanitizedMainBranch="$(echo $mainBranch|tr -d '[:space:]')"
   if [ -z "$sanitizedMainBranch" ]; then
     sanitizedMainBranch="$defaultMainBranch"
   fi
 
-  readonly branches="$(git branch)"
-  declare -a branchNames="${branches//[*| ]/}"
+  declare -a branches="$(git branch)"
+  declare -a branchNames="(${branches//[*| ]/})"
 
-  checkExistenceOfMainBranch "$sanitizedMainBranch" "$branchNames"
+  checkExistenceOfMainBranch "$sanitizedMainBranch" "${branchNames[@]}"
 
-  declare -a branchesAvailableForRemoval="$(echo $branchNames|sed 's/\'$sanitizedMainBranch'//')"
+  declare -a branchesAvailableForRemoval="$(echo ${branchNames[@]}|sed 's/\'$sanitizedMainBranch'//')"
 
-  printf "\nDo you want to remove local branches: (Y/n)"
+  printf "\nDo you want to remove local branches: (Y/n) "
   read  -n 1 removeLocalBranches
   readonly sanitizedLocalBranchRemovalOption="$(echo $removeLocalBranches|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')"
   if [ -z "$sanitizedLocalBranchRemovalOption" ] || [ "$sanitizedLocalBranchRemovalOption" = "y" ]; then
-    showOptions "$branchesAvailableForRemoval"
-    printf "\nPlease enter which of the branches to remove from list above: (all)"
+    showOptions "${branchesAvailableForRemoval[@]}"
+    printf "\nPlease enter which of the branches to remove from list above: (all) "
     read selectedOption
 
     filterBranchNames
@@ -141,7 +145,7 @@ runLocalBranchRemoval() {
 }
 
 askForRemoteRepository() {
-  printf "Do you have an associated remote repository?: (Y\n)\n"
+  printf "Do you have an associated remote repository?: (Y\n) "
   read hasRemote
   readonly sanitizedHasRemoteOption="$(echo $selectedOption|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')"
   case "$hasRemote" in
