@@ -58,8 +58,10 @@ showOptions() {
 }
 
 filterBranchNames() {
-  declare -a branchesAvailableForRemoval="($@)"
-  readonly sanitizedSelectedOption="$(echo $selectedOption|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]'|tr , '[:space:]')"
+  declare theSelectedOption="$1"
+  # attempt to overwrite the existing varaible in the global scope
+  declare -a branchesAvailableForRemoval="(${@:2})"
+  readonly sanitizedSelectedOption="$(echo $theSelectedOption|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]'|tr , '[:space:]')"
 
   if [ -z "$sanitizedSelectedOption" ] || [ "$sanitizedSelectedOption" = "all" ]; then
     printf "\nAll branches will be removed.\n"
@@ -84,7 +86,7 @@ filterBranchNames() {
         printf "Pretend filtering %s from the branchesAvailableForRemoval.\n" "$currentBranch"
       done
     # Is it a list of branches to remove?
-    elif [ "${selectedOption:0:1}" = "["  ]; then
+    elif [ "${theSelectedOption:0:1}" = "["  ]; then
       # remove prefix from list
       sanitizedSelectedOptionList="${sanitizedSelectedOptionList//'['/}"
       for branchName in ${branchesAvailableForRemoval[@]};
@@ -94,7 +96,7 @@ filterBranchNames() {
         printf "Pretend filter of %s name from list.\n" "$branchName"
       done
     else
-      printf "The list/array must be prefixed with '![' or '[', %s is not a valid option.\n" "$selectedOption"
+      printf "The list/array must be prefixed with '![' or '[', %s is not a valid option.\n" "$theSelectedOption"
       exit 1
     fi
   else
@@ -138,7 +140,7 @@ runLocalBranchRemoval() {
     printf "\nPlease enter which of the branches to remove from list above: (all) "
     read selectedOption
 
-    filterBranchNames "${branchesAvailableForRemoval[@]}"
+    filterBranchNames "$selectedOption" "${branchesAvailableForRemoval[@]}"
 
     removeSelectedBranches
   elif [ "$sanitizedLocalBranchRemovalOption" = "n" ]; then
