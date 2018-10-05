@@ -45,8 +45,8 @@ printAvailableBranches() {
 
 printBranchRemovalOptions() {
   printf "\nAvailable Options:
-    [associated branch number(s)] - This is a brackets list/array populated with branches to be removed by associated branch number. Example: [1,2,5]\n
-    ![associated branch number(s)] - This is a brackets list/array, preceded by and exclaimation point, populated with branches to skip removing by associated branch number. Example: ![1,2,5]\n
+    [associated branch number(s)] - This is a list/array populated with the associated branch number(s) of the branches that will be removed. Only the selected branches will be removed. Example Input: [1,2,5]\n
+    ![associated branch number(s)] - This is a list/array, preceded by and exclaimation point, populated with the associated branch number(s) that will not be removed. Everything except for the selected branches will be removed. Example Input: ![1,2,5]\n
     all - This will select all the branches to be removed.\n
   "
 }
@@ -102,8 +102,7 @@ filterBranchNames() {
           branchesAvailableForRemoval=(${branchesAvailableForRemoval[@]//$branchKey::$theBranchName/})
         fi
       done
-      echo "${branchesAvailableForRemoval[@]}"
-      exit 0
+
     # Is it a list of branches to remove?
     elif [ "${theSelectedOption:0:1}" = "["  ]; then
       # remove prefix from list
