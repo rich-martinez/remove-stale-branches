@@ -258,7 +258,6 @@ removeSelectedBranches() {
 #   None|Previous Status
 #######################################
 runLocalBranchRemoval() {
-  checkForGit
   readonly defaultMainBranch="master"
 
   printf "Please choose the main branch which will not be removed: (%s) " "$defaultMainBranch"
@@ -329,6 +328,8 @@ askForRemoteRepository() {
 #####################
 # Start prompting the user here
 #####################
+checkForGit
+
 runLocalBranchRemoval
 
 exit 0
