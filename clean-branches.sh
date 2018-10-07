@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 
+#######################################
+# Check to see if git is available to use. If it is not available then tell the user and exit early.
+#
+# Globals:
+#   which [command]
+#   git [command]
+# Arguments:
+#   None
+# Returns:
+#   None
+#######################################
 checkForGit() {
   if [[ $(which git &> /dev/null) ]] && [[ $? -ne 0 ]]; then
       printf "Please make sure git is installed and available to use on the command line before running this script.\n"
@@ -7,6 +18,18 @@ checkForGit() {
   fi
 }
 
+#######################################
+# Make sure the main branch picked is one of the available branch names.
+# Print an error and exit if it is not an available branch name.
+#
+# Globals:
+#   None
+# Arguments:
+#   mainBranch [string]
+#   allBranchNames [array]
+# Returns:
+#   None
+#######################################
 checkExistenceOfMainBranch() {
   readonly mainBranch="$1"
   # all arguments passed into function starting at the 2nd position
@@ -19,11 +42,16 @@ checkExistenceOfMainBranch() {
   fi
 }
 
-checkoutTheMainBranch() {
-  printf "Moving to the main branch (i.e. %s). It will not be removed.\n" "$mainBranch"
-  git checkout "$mainBranch"
-}
-
+#######################################
+# Show the user which branches are available for removal.
+#
+# Globals:
+#   None
+# Arguments:
+#   availableBranchNames [array]
+# Returns:
+#   None
+#######################################
 printAvailableBranches() {
   printf "\nBranches Available for Removal:\n"
 
@@ -43,6 +71,16 @@ printAvailableBranches() {
   done
 }
 
+#######################################
+# Show the user what options they have to remove the branches available for removal.
+#
+# Globals:
+#   None
+# Arguments:
+#   availableBranchNames [array]
+# Returns:
+#   None
+#######################################
 printBranchRemovalOptions() {
   printf "\nAvailable Options:
     [associated branch number(s)] - This is a list/array populated with the associated branch number(s) of the branches that will be removed. Only the selected branches will be removed. Example Input: [1,2,5]\n
@@ -51,6 +89,17 @@ printBranchRemovalOptions() {
   "
 }
 
+#######################################
+# Show the user all the available options including branches available for removal and removal options.
+#
+# Globals:
+#   printAvailableBranches [function]
+#   printBranchRemovalOptions [function]
+# Arguments:
+#   availableBranchNames [array]
+# Returns:
+#   None
+#######################################
 showOptions() {
   # all arguments starting from the first '$@'
   declare -a availableBranchNames="($@)"
@@ -63,6 +112,16 @@ showOptions() {
   printBranchRemovalOptions
 }
 
+#######################################
+# Make sure that the branch key (i.e. identifier) is a number.
+#
+# Globals:
+#   None
+# Arguments:
+#   branchItendifier [string]
+# Returns:
+#   None
+#######################################
 checkBranchIndentifier() {
   readonly branchItendifier="$1"
 
@@ -71,6 +130,17 @@ checkBranchIndentifier() {
   fi
 }
 
+#######################################
+# Filter the list of branches available for removal to match the branches the user wants to remove.
+#
+# Globals:
+#   branchesAvailableForRemoval [array]
+# Arguments:
+#   theSelectedOption [string] - The removal option that the user selected
+#   branchesAvailableForRemoval [array]
+# Returns:
+#   None
+#######################################
 filterBranchNames() {
   declare theSelectedOption="$1"
   # attempt to overwrite the existing varaible in the global scope
@@ -129,15 +199,45 @@ filterBranchNames() {
   fi
 }
 
+#######################################
+# Checkout the main branch and then remove the selected branches.
+#
+# Globals:
+#   None
+# Arguments:
+#   theMainBranch [string]
+#   branchesToRemove [array]
+# Returns:
+#   None
+#######################################
 removeSelectedBranches() {
-  checkoutTheMainBranch
+  delcare -r theMainBranch="$1"
+  declare -a branchesToRemove="(${@:2})"
 
-  for branch in $branchesAvailableForRemoval
+  printf "Moving to the main branch (i.e. %s). It will not be removed.\n" "$theMainBranch"
+  git checkout "$theMainBranch"
+
+  for branch in $branchesToRemove
   do
     printf "Pretend removing %s" "$branch"
   done
 }
 
+#######################################
+#  Run the branch removal process for local branches.
+#
+# Globals:
+#   git [command]
+#   checkExistenceOfMainBranch [function]
+#   showOptions [function]
+#   filterBranchNames [function]
+#   removeSelectedBranches [ function]
+# Arguments:
+#   theMainBranch [string]
+#   branchesToRemove [array]
+# Returns:
+#   None|Previous Status
+#######################################
 runLocalBranchRemoval() {
   checkForGit
   readonly defaultMainBranch="master"
@@ -155,6 +255,8 @@ runLocalBranchRemoval() {
   checkExistenceOfMainBranch "$sanitizedMainBranch" "${branchNames[@]}"
 
   declare -a branchesAvailableForRemoval="($(echo ${branchNames[@]}|sed 's/\'$sanitizedMainBranch'//'))"
+
+  # Prefix each branch in the list of available branches with an incremented number.
   declare -i branchCounter="1"
   for branchKey in ${!branchesAvailableForRemoval[@]}
   do
