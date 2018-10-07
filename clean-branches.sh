@@ -137,18 +137,17 @@ checkBranchIndentifier() {
 #   branchesAvailableForRemoval [array]
 # Arguments:
 #   theSelectedOption [string] - The removal option that the user selected
-#   branchesAvailableForRemoval [array]
 # Returns:
-#   None
+#   None|Previous Status
 #######################################
 filterBranchNames() {
   declare theSelectedOption="$1"
   # attempt to overwrite the existing varaible in the global scope
-  declare -a branchesAvailableForRemoval="(${@:2})"
   declare sanitizedSelectedOption="$(echo $theSelectedOption|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]'|tr , '[:space:]')"
 
   if [ -z "$sanitizedSelectedOption" ] || [ "$sanitizedSelectedOption" = "all" ]; then
     printf "\nAll branches will be removed.\n"
+    return
 
   # Did the user provide a list?
   elif [ ${sanitizedSelectedOption:${#sanitizedSelectedOption}-1} = "]" ]; then
@@ -200,6 +199,26 @@ filterBranchNames() {
 }
 
 #######################################
+# Remove the branch key prefix (e.g. 1::) from each branch that is ready for removal.
+#
+# Globals:
+#   branchesAvailableForRemoval [array]
+# Arguments:
+# None
+# Returns:
+#   None
+#######################################
+mapListOfBranchNames() {
+  for branchKey in ${!branchesAvailableForRemoval[@]}
+  do
+    declare theBranchValue="${branchesAvailableForRemoval[$branchKey]}"
+    declare updatedBranchValue="${theBranchValue##*::}"
+
+    branchesAvailableForRemoval[$branchKey]="$updatedBranchValue"
+  done
+}
+
+#######################################
 # Checkout the main branch and then remove the selected branches.
 #
 # Globals:
@@ -211,15 +230,15 @@ filterBranchNames() {
 #   None
 #######################################
 removeSelectedBranches() {
-  delcare -r theMainBranch="$1"
+  declare -r theMainBranch="$1"
   declare -a branchesToRemove="(${@:2})"
 
   printf "Moving to the main branch (i.e. %s). It will not be removed.\n" "$theMainBranch"
   git checkout "$theMainBranch"
 
-  for branch in $branchesToRemove
+  for branch in ${branchesToRemove[@]}
   do
-    printf "Pretend removing %s" "$branch"
+    printf "Pretend removing branch: %s\n" "$branch"
   done
 }
 
@@ -272,9 +291,9 @@ runLocalBranchRemoval() {
     printf "\nPlease enter which of the branches to remove from list above: (all) "
     read selectedOption
 
-    filterBranchNames "$selectedOption" "${branchesAvailableForRemoval[@]}"
-
-    removeSelectedBranches
+    filterBranchNames "$selectedOption"
+    mapListOfBranchNames
+    removeSelectedBranches "$sanitizedMainBranch" "${branchesAvailableForRemoval[@]}"
   elif [ "$sanitizedLocalBranchRemovalOption" = "n" ]; then
     # Don't do anything with local branches and go to next prompt.
     return
