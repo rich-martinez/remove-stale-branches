@@ -104,7 +104,7 @@ showOptions() {
   # all arguments starting from the first '$@'
   declare -a availableBranchNames="($@)"
   if [ "${#availableBranchNames[@]}" -eq "0" ]; then
-    printf "No local branches can be removed because there is only one local branch\n"
+    printf "No local branches can be removed because there is only one local branch.\n"
     exit 1
   fi
 
@@ -236,10 +236,27 @@ removeSelectedBranches() {
   printf "Moving to the main branch (i.e. %s). It will not be removed.\n" "$theMainBranch"
   git checkout "$theMainBranch"
 
-  for branch in ${branchesToRemove[@]}
-  do
-    printf "Pretend removing branch: %s\n" "$branch"
-  done
+  printf "\n"
+  printf "=%.0s" {1..50}
+  printf "\nbranch: %s" "${branchesToRemove[@]}"
+  printf "\n"
+  printf "=%.0s" {1..50}
+  printf "\nAre you sure you want to remove the branches listed above? (Y/n) "
+  read -n 1 removeListedBranches
+  readonly sanitizedremoveListedBranches="$(echo $removeListedBranches|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')"
+
+  if [ -z "$sanitizedremoveListedBranches" ] || [ "$sanitizedremoveListedBranches" = "y" ]; then
+    for branch in ${branchesToRemove[@]}
+    do
+      git branch -D "$branch"
+    done
+  elif [ "$sanitizedremoveListedBranches" = "n" ]; then
+    printf "Please try again.\n"
+    exit 1
+  else
+    printf "\n'%s' is an invalid option.\n" "$sanitizedremoveListedBranches"
+    exit 1
+  fi
 }
 
 #######################################
