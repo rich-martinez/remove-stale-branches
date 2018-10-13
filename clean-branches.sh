@@ -330,11 +330,12 @@ askForRemoteRepository() {
       read originRemote
       #TODO: Make sure the remote exists in this repository before getting remote branches
       readonly remoteBranches="$(git ls-remote --heads $originRemote | sed 's?.*refs/heads/??')"
-      declare remoteBranchNames="${remoteBranches//[*| ]/}"
+      declare -a remoteBranchNames="(${remoteBranches//[*| ]/})"
       showOptions "$remoteBranchNames"
       ;;
     n)
       printf "Skipping removal of any remote branches."
+      return
       ;;
     *)
       printf "%s is not in available option" "$hasRemote"
