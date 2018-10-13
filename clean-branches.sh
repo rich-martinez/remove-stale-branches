@@ -289,7 +289,7 @@ runLocalBranchRemoval() {
 
   checkExistenceOfMainBranch "$sanitizedMainBranch" "${branchNames[@]}"
 
-  declare -a branchesAvailableForRemoval="($(echo ${branchNames[@]}|sed 's/\'$sanitizedMainBranch'//'))"
+  declare -a branchesAvailableForRemoval="(${branchNames[@]//$sanitizedMainBranch/})"
 
   # Prefix each branch in the list of available branches with an incremented number.
   declare -i branchCounter="1"
@@ -298,7 +298,8 @@ runLocalBranchRemoval() {
     branchesAvailableForRemoval[$branchKey]="$branchCounter::${branchesAvailableForRemoval[$branchKey]}"
     branchCounter=$((branchCounter + 1))
   done
-
+  echo "${branchesAvailableForRemoval[@]}"
+  exit 0
   printf "\nDo you want to remove local branches: (Y/n) "
   read  -n 1 removeLocalBranches
   readonly sanitizedLocalBranchRemovalOption="$(echo $removeLocalBranches|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')"
