@@ -201,7 +201,7 @@ filterBranchNames() {
 }
 
 #######################################
-# Remove the branch key prefix (e.g. 1::) from each branch that is ready for removal.
+# Toggle the branch counter key prefix (e.g. 1::) from each branch that is ready for removal.
 #
 # Globals:
 #   branchesAvailableForRemoval [array]
@@ -210,11 +210,17 @@ filterBranchNames() {
 # Returns:
 #   None
 #######################################
-mapListOfBranchNames() {
+toggleBranchesAvailableForRemovalPrefix() {
   for branchKey in ${!branchesAvailableForRemoval[@]}
   do
     declare theBranchValue="${branchesAvailableForRemoval[$branchKey]}"
-    declare updatedBranchValue="${theBranchValue##*::}"
+    if [[ "$theBranchValue" == *"::"* ]]; then
+      # remove the counter prefix
+      declare updatedBranchValue="${theBranchValue##*::}"
+    else
+      # Prefix each branch in the list of available branches with an incremented number.
+      declare updatedBranchValue="$((branchKey + 1))::${branchesAvailableForRemoval[$branchKey]}"
+    fi
 
     branchesAvailableForRemoval[$branchKey]="$updatedBranchValue"
   done
@@ -277,10 +283,10 @@ removeSelectedBranches() {
 #######################################
 runLocalBranchRemoval() {
   readonly defaultMainBranch="master"
-
   printf "Please choose the main branch which will not be removed: (%s) " "$defaultMainBranch"
   read mainBranch
   declare sanitizedMainBranch="$(echo $mainBranch|tr -d '[:space:]')"
+
   if [ -z "$sanitizedMainBranch" ]; then
     sanitizedMainBranch="$defaultMainBranch"
   fi
@@ -289,28 +295,22 @@ runLocalBranchRemoval() {
   declare -a branchNames=("${branches//[*| ]/}")
 
   checkExistenceOfMainBranch "$sanitizedMainBranch" "${branchNames[@]}"
-
   branchesAvailableForRemoval=(${branchNames[@]//$sanitizedMainBranch/})
-
-  # Prefix each branch in the list of available branches with an incremented number.
-  declare -i branchCounter="1"
-  for branchKey in ${!branchesAvailableForRemoval[@]}
-  do
-    branchesAvailableForRemoval[$branchKey]="$branchCounter::${branchesAvailableForRemoval[$branchKey]}"
-    branchCounter=$((branchCounter + 1))
-  done
+  toggleBranchesAvailableForRemovalPrefix
 
   printf "\nDo you want to remove local branches: (Y/n) "
   read  -n 1 removeLocalBranches
   readonly sanitizedLocalBranchRemovalOption="$(echo $removeLocalBranches|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')"
+
   if [ -z "$sanitizedLocalBranchRemovalOption" ] || [ "$sanitizedLocalBranchRemovalOption" = "y" ]; then
     showOptions "${branchesAvailableForRemoval[@]}"
     printf "\nPlease enter which of the branches to remove from list above: (all) "
     read selectedOption
 
     filterBranchNames "$selectedOption"
-    mapListOfBranchNames
+    toggleBranchesAvailableForRemovalPrefix
     removeSelectedBranches "$sanitizedMainBranch" "${branchesAvailableForRemoval[@]}"
+
   elif [ "$sanitizedLocalBranchRemovalOption" = "n" ]; then
     # Don't do anything with local branches and go to next prompt.
     return
