@@ -282,27 +282,26 @@ removeSelectedBranches() {
 #   None|Previous Status
 #######################################
 runLocalBranchRemoval() {
-  readonly defaultMainBranch="master"
-  printf "Please choose the main branch which will not be removed: (%s) " "$defaultMainBranch"
-  read mainBranch
-  declare sanitizedMainBranch="$(echo $mainBranch|tr -d '[:space:]')"
-
-  if [ -z "$sanitizedMainBranch" ]; then
-    sanitizedMainBranch="$defaultMainBranch"
-  fi
-
-  declare -r branches=$(git branch)
-  declare -a branchNames=("${branches//[*| ]/}")
-
-  checkExistenceOfMainBranch "$sanitizedMainBranch" "${branchNames[@]}"
-  branchesAvailableForRemoval=(${branchNames[@]//$sanitizedMainBranch/})
-  toggleBranchesAvailableForRemovalPrefix
-
   printf "\nDo you want to remove local branches: (Y/n) "
   read  -n 1 removeLocalBranches
   readonly sanitizedLocalBranchRemovalOption="$(echo $removeLocalBranches|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')"
 
   if [ -z "$sanitizedLocalBranchRemovalOption" ] || [ "$sanitizedLocalBranchRemovalOption" = "y" ]; then
+    readonly defaultMainBranch="master"
+    printf "Please choose the main branch which will not be removed: (%s) " "$defaultMainBranch"
+    read mainBranch
+    declare sanitizedMainBranch="$(echo $mainBranch|tr -d '[:space:]')"
+
+    if [ -z "$sanitizedMainBranch" ]; then
+      sanitizedMainBranch="$defaultMainBranch"
+    fi
+
+    declare -r branches=$(git branch)
+    declare -a branchNames=("${branches//[*| ]/}")
+
+    checkExistenceOfMainBranch "$sanitizedMainBranch" "${branchNames[@]}"
+    branchesAvailableForRemoval=(${branchNames[@]//$sanitizedMainBranch/})
+    toggleBranchesAvailableForRemovalPrefix
     showOptions "${branchesAvailableForRemoval[@]}"
     printf "\nPlease enter which of the branches to remove from list above: (all) "
     read selectedOption
@@ -321,7 +320,7 @@ runLocalBranchRemoval() {
 }
 
 runRemoteRepositoryBranchRemoval() {
-  printf "Do you have an associated remote repository?: (Y\n) "
+  printf "Do you want to remove remote branches?: (Y\n) "
   read hasRemote
   readonly sanitizedHasRemoteOption="$(echo $selectedOption|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')"
   case "$hasRemote" in
