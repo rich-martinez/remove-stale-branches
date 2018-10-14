@@ -253,8 +253,7 @@ removeSelectedBranches() {
       git branch -D "$branch"
     done
   elif [ "$sanitizedremoveListedBranches" = "n" ]; then
-    printf "Please try again.\n"
-    exit 1
+    printf "\nMoving on...\n"
   else
     printf "\n'%s' is an invalid option.\n" "$sanitizedremoveListedBranches"
     exit 1
@@ -321,7 +320,7 @@ runLocalBranchRemoval() {
   fi
 }
 
-askForRemoteRepository() {
+runRemoteRepositoryBranchRemoval() {
   printf "Do you have an associated remote repository?: (Y\n) "
   read hasRemote
   readonly sanitizedHasRemoteOption="$(echo $selectedOption|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')"
