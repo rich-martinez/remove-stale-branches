@@ -45,6 +45,30 @@ checkExistenceOfMainBranch() {
 }
 
 #######################################
+# Make sure the remote that was picked is one of the available remote names.
+# Print an error and exit if it is not an available remote name.
+#
+# Globals:
+#   None
+# Arguments:
+#   theSelectedRemote [string]
+#   allRemoteNames [array]
+# Returns:
+#   None
+#######################################
+checkExistenceOfSelectedRemote() {
+  readonly theSelectedRemote="$1"
+  # all arguments passed into function starting at the 2nd position
+  readonly allRemoteNames="(${@:2})"
+
+  # Check that main branch is a branch in this repository
+  if [[ ! "${allRemoteNames[@]}" =~ "$theSelectedRemote" ]]; then
+      printf "%s is not a remote in this repository.\n" "$theSelectedRemote"
+      exit 1
+  fi
+}
+
+#######################################
 # Show the user which branches are available for removal.
 #
 # Globals:
@@ -282,7 +306,7 @@ removeSelectedBranches() {
 #   None|Previous Status
 #######################################
 runLocalBranchRemoval() {
-  printf "\nDo you want to remove local branches: (Y/n) "
+  printf "\nDo you want to remove local branches? (Y/n) "
   read  -n 1 removeLocalBranches
   readonly sanitizedLocalBranchRemovalOption="$(echo $removeLocalBranches|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')"
 
@@ -312,7 +336,7 @@ runLocalBranchRemoval() {
 
   elif [ "$sanitizedLocalBranchRemovalOption" = "n" ]; then
     # Don't do anything with local branches and go to next prompt.
-    return
+    printf "\nMoving on...\n"
   else
     printf "\n'%s' is an invalid option.\n" "$sanitizedLocalBranchRemovalOption"
     exit 1
@@ -320,15 +344,20 @@ runLocalBranchRemoval() {
 }
 
 runRemoteRepositoryBranchRemoval() {
-  printf "Do you want to remove remote branches?: (Y\n) "
-  read hasRemote
-  readonly sanitizedHasRemoteOption="$(echo $selectedOption|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')"
-  case "$hasRemote" in
-    y)
-      #save the origin remote name
-      printf "What is your origin remote name?\n"
-      read originRemote
-      #TODO: Make sure the remote exists in this repository before getting remote branches
+  printf "Do you want to remove remote branches? (Y/n) "
+  read -n 1 removeRemoteBranchesOption
+  readonly sanitizedRemoveRemoteBranchesOption="$(echo $removeRemoteBranchesOption|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')"
+  case "$sanitizedRemoveRemoteBranchesOption" in
+    y|"")
+      #save the selected remote name
+      printf "\nWhat is the name of the remote that has the branches you want to remove? "
+      read selectedRemote
+      declare -r sanitizedSelectedRemote="${selectedRemote//[ ]/}"
+      declare -r remotes=$(git remote)
+      declare -a sanitizedRemotes=("${remotes//[ ]/}")
+
+      checkExistenceOfSelectedRemote "$sanitizedSelectedRemote" "${sanitizedRemotes[@]}"
+
       readonly remoteBranches="$(git ls-remote --heads $originRemote | sed 's?.*refs/heads/??')"
       declare -a remoteBranchNames="(${remoteBranches//[*| ]/})"
       showOptions "$remoteBranchNames"
@@ -338,7 +367,7 @@ runRemoteRepositoryBranchRemoval() {
       return
       ;;
     *)
-      printf "%s is not in available option" "$hasRemote"
+      printf "\n%s is not in available option\n" "$hasRemote"
       ;;
   esac
 }
@@ -349,6 +378,7 @@ runRemoteRepositoryBranchRemoval() {
 checkForGit
 
 runLocalBranchRemoval
+runRemoteRepositoryBranchRemoval
 
 exit 0
 
