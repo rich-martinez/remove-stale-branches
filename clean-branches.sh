@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+declare -a branchesAvailableForRemoval
+
 #######################################
 # Check to see if git is available to use. If it is not available then tell the user and exit early.
 #
@@ -284,12 +286,12 @@ runLocalBranchRemoval() {
     sanitizedMainBranch="$defaultMainBranch"
   fi
 
-  declare -a branches="$(git branch)"
-  declare -a branchNames="(${branches//[*| ]/})"
+  declare -r branches=$(git branch)
+  declare -a branchNames=("${branches//[*| ]/}")
 
   checkExistenceOfMainBranch "$sanitizedMainBranch" "${branchNames[@]}"
 
-  declare -a branchesAvailableForRemoval="(${branchNames[@]//$sanitizedMainBranch/})"
+  branchesAvailableForRemoval=(${branchNames[@]//$sanitizedMainBranch/})
 
   # Prefix each branch in the list of available branches with an incremented number.
   declare -i branchCounter="1"
@@ -298,8 +300,7 @@ runLocalBranchRemoval() {
     branchesAvailableForRemoval[$branchKey]="$branchCounter::${branchesAvailableForRemoval[$branchKey]}"
     branchCounter=$((branchCounter + 1))
   done
-  echo "${branchesAvailableForRemoval[@]}"
-  exit 0
+
   printf "\nDo you want to remove local branches: (Y/n) "
   read  -n 1 removeLocalBranches
   readonly sanitizedLocalBranchRemovalOption="$(echo $removeLocalBranches|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]')"
