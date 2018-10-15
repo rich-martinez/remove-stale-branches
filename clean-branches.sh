@@ -140,7 +140,7 @@ printBranchRemovalOptions() {
 #######################################
 showOptions() {
   declare branchTypeIsRemote="$1"
-  declare -a availableBranchNames=("${@:2}")
+  declare -a availableBranchNames=(${@:2})
 
   if [ "${#availableBranchNames[@]}" -eq "0" ]; then
     if [ "$branchTypeIsRemote" = false ]; then
@@ -190,7 +190,7 @@ checkBranchIndentifier() {
 #######################################
 filterBranchNames() {
   declare theSelectedOption="$1"
-  declare -a remoteBranchesAvailableForRemoval=("${@:2}")
+  declare -a remoteBranchesAvailableForRemoval=(${@:2})
   # attempt to overwrite the existing varaible in the global scope
   declare sanitizedSelectedOption="$(echo $theSelectedOption|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]'|tr , '[:space:]')"
 
@@ -257,7 +257,7 @@ filterBranchNames() {
 }
 
 #######################################
-# Toggle the branch counter key prefix (e.g. 1::) from each branch that is ready for removal.
+# Add the branch counter key prefix (e.g. 1::) from each branch that is ready for removal.
 #
 # Globals:
 #   branchesAvailableForRemoval [array]
@@ -266,17 +266,35 @@ filterBranchNames() {
 # Returns:
 #   None
 #######################################
-toggleBranchesAvailableForRemovalPrefix() {
+addBranchesAvailableForRemovalPrefix() {
+  declare -i counter="1"
   for branchKey in ${!branchesAvailableForRemoval[@]}
   do
     declare theBranchValue="${branchesAvailableForRemoval[$branchKey]}"
-    if [[ "$theBranchValue" == *"::"* ]]; then
-      # remove the counter prefix
-      declare updatedBranchValue="${theBranchValue##*::}"
-    else
       # Prefix each branch in the list of available branches with an incremented number.
-      declare updatedBranchValue="$((branchKey + 1))::${branchesAvailableForRemoval[$branchKey]}"
-    fi
+    declare updatedBranchValue="$counter::${branchesAvailableForRemoval[$branchKey]}"
+    counter=$((counter + 1))
+
+    branchesAvailableForRemoval[$branchKey]="$updatedBranchValue"
+  done
+}
+
+#######################################
+# Remove the branch counter key prefix (e.g. 1::) from each branch that is ready for removal.
+#
+# Globals:
+#   branchesAvailableForRemoval [array]
+# Arguments:
+# None
+# Returns:
+#   None
+#######################################
+removeBranchesAvailableForRemovalPrefix() {
+  for branchKey in ${!branchesAvailableForRemoval[@]}
+  do
+    declare theBranchValue="${branchesAvailableForRemoval[$branchKey]}"
+      # remove the counter prefix
+    declare updatedBranchValue="${theBranchValue##*::}"
 
     branchesAvailableForRemoval[$branchKey]="$updatedBranchValue"
   done
@@ -357,13 +375,13 @@ runLocalBranchRemoval() {
 
     checkExistenceOfMainBranch "$sanitizedMainBranch" "${branchNames[@]}"
     declare -a branchesAvailableForRemoval=(${branchNames[@]//$sanitizedMainBranch/})
-    toggleBranchesAvailableForRemovalPrefix
+    addBranchesAvailableForRemovalPrefix
     showOptions false "${branchesAvailableForRemoval[@]}"
     printf "\nPlease enter which of the branches to remove from list above: (all) "
     read selectedOption
 
     filterBranchNames "$selectedOption"
-    toggleBranchesAvailableForRemovalPrefix
+    removeBranchesAvailableForRemovalPrefix
     removeSelectedBranches "$sanitizedMainBranch" "${branchesAvailableForRemoval[@]}"
 
   elif [ "$sanitizedLocalBranchRemovalOption" = "n" ]; then
@@ -391,13 +409,14 @@ runRemoteRepositoryBranchRemoval() {
       checkExistenceOfSelectedRemote "$sanitizedSelectedRemote" "${sanitizedRemotes[@]}"
 
       readonly remoteBranchNames="$(git ls-remote --heads $sanitizedSelectedRemote | sed 's?.*refs/heads/??')"
-      declare -a sanitizedRemoteBranchNames=("${remoteBranches//[*| ]/}")
+      declare -a sanitizedRemoteBranchNames=("${remoteBranchNames//[ ]/}")
+      addBranchesAvailableForRemovalPrefix
       showOptions true "${sanitizedRemoteBranchNames[@]}"
       printf "\nPlease enter which of the branches to remove from list above: (local-branches) "
       read selectedOption
 
       filterBranchNames "$selectedOption" "${sanitizedRemoteBranchNames[@]}"
-      toggleBranchesAvailableForRemovalPrefix
+      removeBranchesAvailableForRemovalPrefix
       removeSelectedBranches "$sanitizedMainBranch" "${branchesAvailableForRemoval[@]}"
       ;;
     n)
