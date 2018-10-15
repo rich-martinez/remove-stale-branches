@@ -145,7 +145,7 @@ showOptions() {
   if [ "${#availableBranchNames[@]}" -eq "0" ]; then
     if [ "$branchTypeIsRemote" = false ]; then
       printf "No local branches can be removed because there is only one local branch.\n"
-    elif [ "$branchTypeIsRemote" = true ]
+    elif [ "$branchTypeIsRemote" = true ]; then
       printf "No remotes branches are available to be removed.\n"
     else
       printf "%s is not a branch type." "$branchTypeIsRemote"
