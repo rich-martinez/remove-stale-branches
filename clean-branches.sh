@@ -103,16 +103,27 @@ printAvailableBranches() {
 # Globals:
 #   None
 # Arguments:
-#   availableBranchNames [array]
+#   branchTypeIsRemote [bool]
 # Returns:
 #   None
 #######################################
 printBranchRemovalOptions() {
-  printf "\nAvailable Options:
-    [associated branch number(s)] - This is a list/array populated with the associated branch number(s) of the branches that will be removed. Only the selected branches will be removed. Example Input: [1,2,5]\n
-    ![associated branch number(s)] - This is a list/array, preceded by and exclaimation point, populated with the associated branch number(s) that will not be removed. Everything except for the selected branches will be removed. Example Input: ![1,2,5]\n
-    all - This will select all the branches to be removed.\n
-  "
+  declare branchTypeIsRemote="$1"
+
+  if [ "$branchTypeIsRemote" = false ]; then
+    printf "\nAvailable Options:
+      [associated branch number(s)] - This is a list/array populated with the associated branch number(s) of the branches that will be removed. Only the selected branches will be removed. Example Input: [1,2,5]\n
+      ![associated branch number(s)] - This is a list/array, preceded by and exclaimation point, populated with the associated branch number(s) that will not be removed. Everything except for the selected branches will be removed. Example Input: ![1,2,5]\n
+      all - This will select all the branches to be removed.\n
+    "
+  else
+    printf "\nAvailable Options:
+      [associated branch number(s)] - This is a list/array populated with the associated branch number(s) of the branches that will be removed. Only the selected branches will be removed. Example Input: [1,2,5]\n
+      ![associated branch number(s)] - This is a list/array, preceded by and exclaimation point, populated with the associated branch number(s) that will not be removed. Everything except for the selected branches will be removed. Example Input: ![1,2,5]\n
+      local-branches - This will select any local branches that have already been removed and remove any associated remote branches\n
+      all - This will select all the branches to be removed.\n
+    "
+  fi
 }
 
 #######################################
@@ -122,20 +133,30 @@ printBranchRemovalOptions() {
 #   printAvailableBranches [function]
 #   printBranchRemovalOptions [function]
 # Arguments:
+#   branchTypeIsRemote [bool]
 #   availableBranchNames [array]
 # Returns:
 #   None
 #######################################
 showOptions() {
-  # all arguments starting from the first '$@'
-  declare -a availableBranchNames="($@)"
+  declare branchTypeIsRemote="$1"
+  declare -a availableBranchNames=("${@:2}")
+
   if [ "${#availableBranchNames[@]}" -eq "0" ]; then
-    printf "No local branches can be removed because there is only one local branch.\n"
+    if [ "$branchTypeIsRemote" = false ]; then
+      printf "No local branches can be removed because there is only one local branch.\n"
+    elif [ "$branchTypeIsRemote" = true ]
+      printf "No remotes branches are available to be removed.\n"
+    else
+      printf "%s is not a branch type." "$branchTypeIsRemote"
+      exit 1
+    fi
+
     exit 1
   fi
 
   printAvailableBranches "${availableBranchNames[@]}"
-  printBranchRemovalOptions
+  printBranchRemovalOptions "$branchTypeIsRemote"
 }
 
 #######################################
@@ -163,17 +184,28 @@ checkBranchIndentifier() {
 #   branchesAvailableForRemoval [array]
 # Arguments:
 #   theSelectedOption [string] - The removal option that the user selected
+#   remoteBranchesAvailableForRemoval [array]
 # Returns:
 #   None|Previous Status
 #######################################
 filterBranchNames() {
   declare theSelectedOption="$1"
+  declare -a remoteBranchesAvailableForRemoval=("${@:2}")
   # attempt to overwrite the existing varaible in the global scope
   declare sanitizedSelectedOption="$(echo $theSelectedOption|tr '[:upper:]' '[:lower:]'|tr -d '[:space:]'|tr , '[:space:]')"
 
   if [ -z "$sanitizedSelectedOption" ] || [ "$sanitizedSelectedOption" = "all" ]; then
     printf "\nAll branches will be removed.\n"
     return
+  elif [ "${#remoteBranchesAvailableForRemoval[@]}" -gt "0" ] && [ "$sanitizedSelectedOption" = "local-branches" ]; then
+    for branchAvailableForRemoval in "${branchesAvailableForRemoval[@]}"
+    do
+      # if the current branch available for removal doesn't exist as one of the remote branches up for
+      # removal, then remove that branch from the array.
+      if [ ! "${remoteBranchesAvailableForRemoval[@]}" =~ "$branchAvailableForRemoval" ]; then
+        branchesAvailableForRemoval=(${branchesAvailableForRemoval[@]//$branchAvailableForRemoval/})
+      fi
+    done
 
   # Did the user provide a list?
   elif [ ${sanitizedSelectedOption:${#sanitizedSelectedOption}-1} = "]" ]; then
@@ -324,9 +356,9 @@ runLocalBranchRemoval() {
     declare -a branchNames=("${branches//[*| ]/}")
 
     checkExistenceOfMainBranch "$sanitizedMainBranch" "${branchNames[@]}"
-    branchesAvailableForRemoval=(${branchNames[@]//$sanitizedMainBranch/})
+    declare -a branchesAvailableForRemoval=(${branchNames[@]//$sanitizedMainBranch/})
     toggleBranchesAvailableForRemovalPrefix
-    showOptions "${branchesAvailableForRemoval[@]}"
+    showOptions false "${branchesAvailableForRemoval[@]}"
     printf "\nPlease enter which of the branches to remove from list above: (all) "
     read selectedOption
 
@@ -358,9 +390,15 @@ runRemoteRepositoryBranchRemoval() {
 
       checkExistenceOfSelectedRemote "$sanitizedSelectedRemote" "${sanitizedRemotes[@]}"
 
-      readonly remoteBranches="$(git ls-remote --heads $originRemote | sed 's?.*refs/heads/??')"
-      declare -a remoteBranchNames="(${remoteBranches//[*| ]/})"
-      showOptions "$remoteBranchNames"
+      readonly remoteBranchNames="$(git ls-remote --heads $sanitizedSelectedRemote | sed 's?.*refs/heads/??')"
+      declare -a sanitizedRemoteBranchNames=("${remoteBranches//[*| ]/}")
+      showOptions true "${sanitizedRemoteBranchNames[@]}"
+      printf "\nPlease enter which of the branches to remove from list above: (local-branches) "
+      read selectedOption
+
+      filterBranchNames "$selectedOption" "${sanitizedRemoteBranchNames[@]}"
+      toggleBranchesAvailableForRemovalPrefix
+      removeSelectedBranches "$sanitizedMainBranch" "${branchesAvailableForRemoval[@]}"
       ;;
     n)
       printf "Skipping removal of any remote branches."
