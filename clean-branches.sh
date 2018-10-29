@@ -59,7 +59,7 @@ checkExistenceOfMainBranch() {
 checkExistenceOfSelectedRemote() {
   readonly theSelectedRemote="$1"
   # all arguments passed into function starting at the 2nd position
-  readonly allRemoteNames="(${@:2})"
+  readonly -a allRemoteNames="(${@:2})"
 
   # Check that main branch is a branch in this repository
   if [[ ! "${allRemoteNames[@]}" =~ "$theSelectedRemote" ]]; then

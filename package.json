@@ -1,0 +1,24 @@
+{
+  "name": "remove-stale-branches",
+  "version": "1.0.0",
+  "description": "Attempt to remove stale branches based on user input.",
+  "main": "remove-stale-branches.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "git",
+    "branch",
+    "stale",
+    "remove",
+    "prune",
+    "remote",
+    "local"
+  ],
+  "author": "Rich Martinez",
+  "license": "ISC",
+  "dependencies": {
+    "command-exists": "^1.2.8",
+    "inquirer": "^6.2.0"
+  }
+}
