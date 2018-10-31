@@ -43,7 +43,7 @@ exports.runLocalBranchRemoval = async () => {
 
     if (localBranchRemovalAnswer === 'y') {
         const simpleGit = require('simple-git/promise')();
-        const branches = simpleGit.branchLocal().then(branches => branches.all);
+        let branches = simpleGit.branchLocal().then(branches => branches.all);
         const defaultBranchName = 'master';
 
         const mainBranchAnswer = await inquirer.prompt([
@@ -51,24 +51,22 @@ exports.runLocalBranchRemoval = async () => {
                 type: 'autocomplete',
                 name: 'mainBranchPrompt',
                 message: 'Please choose the main branch which will not be removed:',
-                suggestOnly: true,
+                suggestOnly: false,
                 filter(answer) {
                     return answer.trim();
                 },
                 async validate(answer) {
                     branches = await branches;
-                    console.log(JSON.stringify(answer, null, 2));
-                    console.log(JSON.stringify(branches));
-                    console.log(' ');
                     if (!branches.includes(answer)) {
-                        // console.log(`${answer} is not one of the available branches:\n${JSON.stringify(branches, null, 2)}`);
+                        console.log(`\n\n${answer} is not one of the available branches:\n${JSON.stringify(branches, null, 2)}\n\n`);
                     }
 
                     return true;
                 },
                 async source(answers, input) {
-                    const fuzzy = require('fuzzy');
+                    branches = await branches;
 
+                    const fuzzy = require('fuzzy');
                     const branchSearch = await new Promise((resolve) => {
                         input = input || '';
                         let fuzzyResult = fuzzy.filter(input, branches);
@@ -82,6 +80,7 @@ exports.runLocalBranchRemoval = async () => {
         ]).then(answer => answer.mainBranchPrompt);
 
         const branchesAvailableForRemoval = branches.filter(branch => branch !== mainBranchAnswer);
+
         // showOptions(branchesAvailableForRemoval);
 
     } else {
