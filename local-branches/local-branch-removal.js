@@ -1,50 +1,21 @@
 const inquirer = require('inquirer');
+const fuzzy = require('fuzzy');
 inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
 
-const  branchOptionsAnswer = async (branches = []) => {
-    if (branches.length > 0) {
-        await inquirer
-            .prompt([
-                {
-                    type: 'checkbox',
-                    message: 'Select the branches that you want to remove',
-                    name: 'branchOptionsPrompt',
-
-                }
-            ])
-            .then();
-    } else {
-        console.log("\nNo local branches can be removed because there is only one local branch.\n");
-    }
-};
-
 exports.runLocalBranchRemoval = async () => {
-    const localBranchRemovalAnswer =  await inquirer
+    const shouldRemoveLocalBranches =  await inquirer
         .prompt([
             {
-                type: 'input',
+                type: 'confirm',
                 message: 'Do you want to remove local branches?',
                 name: 'shouldRemoveLocalBranchesPrompt',
-                filter(answer) {
-                    return answer.toLowerCase();
-                },
-                validate(answer) {
-                    const exceptableValues = ['n', 'y', 'yes', 'no'];
-                    if (answer.length > 1 ||  !exceptableValues.includes(answer) ) {
-                        return 'Please choose one of the available options.';
-                    }
-
-                    return true;
-                },
-                default: 'y',
             },
         ])
         .then(answer  => answer.shouldRemoveLocalBranchesPrompt);
 
-    if (localBranchRemovalAnswer === 'y') {
+    if (shouldRemoveLocalBranches) {
         const simpleGit = require('simple-git/promise')();
         let branches = simpleGit.branchLocal().then(branches => branches.all);
-        const defaultBranchName = 'master';
 
         const mainBranchAnswer = await inquirer.prompt([
             {
@@ -66,7 +37,6 @@ exports.runLocalBranchRemoval = async () => {
                 async source(answers, input) {
                     branches = await branches;
 
-                    const fuzzy = require('fuzzy');
                     const branchSearch = await new Promise((resolve) => {
                         input = input || '';
                         let fuzzyResult = fuzzy.filter(input, branches);
@@ -75,11 +45,52 @@ exports.runLocalBranchRemoval = async () => {
 
                     return branchSearch;
                 },
-                default: defaultBranchName,
             }
         ]).then(answer => answer.mainBranchPrompt);
 
+        /**
+         * @param {array} branchesAvailableForRemoval
+         * @returns {string}
+         */
+        const branchRemovalOptionsContent = (branchesAvailableForRemoval = []) => {
+            const content = `\
+            \nA list of the branches available for removal:\
+            \n${JSON.stringify(branchesAvailableForRemoval, null, 2)}\n\
+            \nPlease choose an option to remove branches.\n\
+            `;
+
+            return content;
+        };
         const branchesAvailableForRemoval = branches.filter(branch => branch !== mainBranchAnswer);
+
+        // Can this be an array full of objects with a common key and a specific identifier
+        // e.g. {title: 'remove etc. etc.', name: 'removeAllBranches'}
+        // This will make it easier to do a comparision to handle these with conditionall logic
+        // Alternatively we could create a constant for each of these strings.
+        const branchRemovalOptions = [
+            'Remove all branches except the main branch.',
+            'Select branch(es) to be removed.',
+            'Select branch(es) to keep, and remove all other branches.',
+        ];
+
+        const branchesToRemoveAnswer = await inquirer.prompt([
+            {
+                type: 'autocomplete',
+                name: 'branchesToRemovePrompt',
+                message: branchRemovalOptionsContent(branchesAvailableForRemoval),
+                suggestOnly: false,
+                async source(answers, input) {
+                    const branchRemovalOptionSearch = await new Promise((resolve) => {
+                        input = input || '';
+                        // TODO: Can I filter with an array full of objects?
+                        let fuzzyResult = fuzzy.filter(input, branchRemovalOptions);
+                        return resolve(fuzzyResult.map(removalOption => removalOption.original));
+                    });
+
+                    return branchRemovalOptionSearch;
+                },
+            }
+        ]);
 
         // showOptions(branchesAvailableForRemoval);
 
