@@ -12,7 +12,7 @@ exports.removeAllBranchesExceptMainBranchContent = removeAllBranchesExceptMainBr
 exports.removeSelectedBranchesContent = removeSelectedBranchesContent;
 exports.keepSelectedBranchesContent = keepSelectedBranchesContent;
 
-exports.branchesToRemovePrompt = async (branchesAvailableForRemoval = []) => {
+exports.branchesToRemovePrompt = async (branchesAvailableForRemoval) => {
     // Can this be an array full of objects with a common key and a specific identifier
     // e.g. {title: 'remove etc. etc.', name: 'removeAllBranches'}
     // This will make it easier to do a comparision to handle these with conditionall logic
@@ -22,6 +22,11 @@ exports.branchesToRemovePrompt = async (branchesAvailableForRemoval = []) => {
         removeSelectedBranchesContent,
         keepSelectedBranchesContent
     ];
+
+    if (branchesAvailableForRemoval.length === 0) {
+        console.log(`\n\nThere are no local branches available for removal.\n\n`);
+        process.exit(1);
+    }
 
     return inquirer.prompt([
         {
@@ -40,5 +45,5 @@ exports.branchesToRemovePrompt = async (branchesAvailableForRemoval = []) => {
                 return branchRemovalOptionSearch;
             },
         }
-    ]);
+    ]).then(answer => answer.branchesToRemovePrompt);
 }
