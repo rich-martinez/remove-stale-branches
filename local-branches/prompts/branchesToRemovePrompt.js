@@ -4,15 +4,23 @@ const branchRemovalOptionsContent = require('../../shared/branchRemovalOptionsCo
 
 inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
 
+const removeAllBranchesExceptMainBranchContent = 'Remove all branches except the main branch.';
+const removeSelectedBranchesContent = 'Select branch(es) to be removed.';
+const keepSelectedBranchesContent = 'Select branch(es) to keep, and remove all other branches.';
+
+exports.removeAllBranchesExceptMainBranchContent = removeAllBranchesExceptMainBranchContent;
+exports.removeSelectedBranchesContent = removeSelectedBranchesContent;
+exports.keepSelectedBranchesContent = keepSelectedBranchesContent;
+
 exports.branchesToRemovePrompt = async (branchesAvailableForRemoval = []) => {
     // Can this be an array full of objects with a common key and a specific identifier
     // e.g. {title: 'remove etc. etc.', name: 'removeAllBranches'}
     // This will make it easier to do a comparision to handle these with conditionall logic
     // Alternatively we could create a constant for each of these strings.
     const branchRemovalOptions = [
-        'Remove all branches except the main branch.',
-        'Select branch(es) to be removed.',
-        'Select branch(es) to keep, and remove all other branches.',
+        removeAllBranchesExceptMainBranchContent,
+        removeSelectedBranchesContent,
+        keepSelectedBranchesContent
     ];
 
     return await inquirer.prompt([
