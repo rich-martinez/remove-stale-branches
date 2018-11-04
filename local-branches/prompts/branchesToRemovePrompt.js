@@ -23,7 +23,7 @@ exports.branchesToRemovePrompt = async (branchesAvailableForRemoval = []) => {
         keepSelectedBranchesContent
     ];
 
-    return await inquirer.prompt([
+    return inquirer.prompt([
         {
             type: 'autocomplete',
             name: 'branchesToRemovePrompt',

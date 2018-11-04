@@ -12,7 +12,7 @@ exports.runLocalBranchRemoval = async () => {
         const branches = await allBranches();
         const mainBranchAnswer = await mainBranchPrompt(branches);
         const branchesAvailableForRemoval = branches.filter(branch => branch !== mainBranchAnswer);
-        const branchesToRemoveAnswer = branchesToRemovePrompt(branchesAvailableForRemoval);
+        const branchesToRemoveAnswer = await branchesToRemovePrompt(branchesAvailableForRemoval);
 
         if (branchesToRemoveAnswer === removeAllBranchesExceptMainBranchContent) {
 

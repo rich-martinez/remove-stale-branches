@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 
 exports.shouldRemoveLocalBranches = async () => {
-    return  await inquirer
+    return inquirer
     .prompt([
         {
             type: 'confirm',

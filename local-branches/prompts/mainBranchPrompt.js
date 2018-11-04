@@ -2,7 +2,7 @@ const fuzzy = require('fuzzy');
 const inquirer = require('inquirer');
 
 exports.mainBranchPrompt = async (branches = []) => {
-    return await inquirer.prompt([
+    return inquirer.prompt([
         {
             type: 'autocomplete',
             name: 'mainBranchPrompt',
