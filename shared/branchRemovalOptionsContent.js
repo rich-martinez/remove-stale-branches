@@ -1,3 +1,11 @@
+const removeAllBranchesExceptMainBranchContent = 'Remove all branches except the main branch.';
+const removeSelectedBranchesContent = 'Select branch(es) to be removed.';
+const keepSelectedBranchesContent = 'Select branch(es) to keep, and remove all other branches.';
+
+exports.removeAllBranchesExceptMainBranchContent = removeAllBranchesExceptMainBranchContent;
+exports.removeSelectedBranchesContent = removeSelectedBranchesContent;
+exports.keepSelectedBranchesContent = keepSelectedBranchesContent;
+
 /**
  * @param {array} branchesAvailableForRemoval
  * @returns {string}

@@ -2,18 +2,25 @@ const isGitSafeRepository = require('../shared/isGitSafeRepository').isGitSafeRe
 const shouldRemoveLocalBranches = require('./shouldRemoveLocalBranches').shouldRemoveLocalBranches;
 const allBranches = require('../shared/allBranches').allBranches;
 const mainBranchPrompt = require('./prompts/mainBranchPrompt').mainBranchPrompt;
-const branchesToRemovePrompt = require('./prompts/branchesToRemovePrompt').branchesToRemovePrompt;
-const removeAllBranchesExceptMainBranchContent = require('./prompts/branchesToRemovePrompt').removeAllBranchesExceptMainBranchContent;
-const removeSelectedBranchesContent = require('./prompts/branchesToRemovePrompt').removeSelectedBranchesContent;
-const keepSelectedBranchesContent = require('./prompts/branchesToRemovePrompt').keepSelectedBranchesContent;
-const removeSelectedBranchesPrompt = require('./prompts/removeSelectedBranchesPrompt').removeSelectedBranchesPrompt;
+const branchesToRemovePrompt = require('../shared/prompts/branchesToRemovePrompt').branchesToRemovePrompt;
+const removeSelectedBranchesPrompt = require('../shared/prompts/removeSelectedBranchesPrompt').removeSelectedBranchesPrompt;
+const removeAllBranchesExceptMainBranchContent = require('../shared/branchRemovalOptionsContent').removeAllBranchesExceptMainBranchContent;
+const removeSelectedBranchesContent = require('../shared/branchRemovalOptionsContent').removeSelectedBranchesContent;
+const keepSelectedBranchesContent = require('../shared/branchRemovalOptionsContent').keepSelectedBranchesContent;
 
 exports.runLocalBranchRemoval = async () => {
     if (isGitSafeRepository() && await shouldRemoveLocalBranches() === true) {
         const branches = await allBranches();
         const mainBranchAnswer = await mainBranchPrompt(branches);
         const branchesAvailableForRemoval = branches.filter(branch => branch !== mainBranchAnswer);
-        const branchesToRemoveAnswer = await branchesToRemovePrompt(branchesAvailableForRemoval);
+        const branchesToRemoveAnswer = await branchesToRemovePrompt(
+            branchesAvailableForRemoval,
+            [
+                removeAllBranchesExceptMainBranchContent,
+                removeSelectedBranchesContent,
+                keepSelectedBranchesContent
+            ]
+        );
         let selectedBranchesToRemove = [];
 
         if (branchesToRemoveAnswer === removeAllBranchesExceptMainBranchContent) {

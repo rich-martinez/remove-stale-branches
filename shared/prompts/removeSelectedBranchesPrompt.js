@@ -11,19 +11,17 @@ exports.removeSelectedBranchesPrompt = async (branchesAvailableForRemoval) => {
             message: 'Select the branches to remove. (use spacebar to select/deselect options)',
             highlight: true,
             searchable: true,
-            filter(answer) {
+            filter(answers) {
                 // filter any branch name that was not selected
-                return branchesAvailableForRemoval.filter(branch => answer.includes(branch));
+                return branchesAvailableForRemoval.filter(branch => answers.includes(branch));
             },
-            validate(answer) {
-                console.log(typeof answer);
-                console.log(answer);
-                if (answer.length === 0) {
+            validate(answers) {
+                if (answers.length === 0) {
                     return `\n\nPlease select an option.\n\n`;
                 }
 
-                if (!branchesAvailableForRemoval.includes(answer)) {
-                    return `\n\n${answer} is not one of the available branches:\n${JSON.stringify(branchesAvailableForRemoval, null, 2)}\n\n`;
+                if (!answers.some(answer => branchesAvailableForRemoval.includes(answer))) {
+                    return `\n\n${answers} is not one of the available branches:\n${JSON.stringify(branchesAvailableForRemoval, null, 2)}\n\n`;
                 }
 
                 return true;
