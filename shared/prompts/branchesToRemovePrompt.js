@@ -1,6 +1,6 @@
 const fuzzy = require('fuzzy');
 const inquirer = require('inquirer');
-const branchRemovalOptionsContent = require('../branchRemovalOptionsContent').branchRemovalOptionsContent;
+const { branchRemovalOptionsContent } = require('../branchRemovalOptionsContent');
 
 inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
 

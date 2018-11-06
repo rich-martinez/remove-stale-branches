@@ -1,12 +1,15 @@
-const isGitSafeRepository = require('../shared/isGitSafeRepository').isGitSafeRepository;
-const shouldRemoveLocalBranches = require('./shouldRemoveLocalBranches').shouldRemoveLocalBranches;
-const allBranches = require('../shared/allBranches').allBranches;
-const mainBranchPrompt = require('./prompts/mainBranchPrompt').mainBranchPrompt;
-const branchesToRemovePrompt = require('../shared/prompts/branchesToRemovePrompt').branchesToRemovePrompt;
-const removeSelectedBranchesPrompt = require('../shared/prompts/removeSelectedBranchesPrompt').removeSelectedBranchesPrompt;
-const removeAllBranchesExceptMainBranchContent = require('../shared/branchRemovalOptionsContent').removeAllBranchesExceptMainBranchContent;
-const removeSelectedBranchesContent = require('../shared/branchRemovalOptionsContent').removeSelectedBranchesContent;
-const keepSelectedBranchesContent = require('../shared/branchRemovalOptionsContent').keepSelectedBranchesContent;
+const { isGitSafeRepository } = require('../shared/isGitSafeRepository');
+const { shouldRemoveLocalBranches } = require('./shouldRemoveLocalBranches');
+const { allBranches } = require('../shared/allBranches');
+const { mainBranchPrompt } = require('./prompts/mainBranchPrompt');
+const { branchesToRemovePrompt } = require('../shared/prompts/branchesToRemovePrompt');
+const { removeSelectedBranchesPrompt } = require('../shared/prompts/removeSelectedBranchesPrompt');
+const {
+    removeAllBranchesExceptMainBranchContent,
+    removeSelectedBranchesContent,
+    keepSelectedBranchesContent
+} = require('../shared/branchRemovalOptionsContent');
+
 
 exports.runLocalBranchRemoval = async () => {
     if (isGitSafeRepository() && await shouldRemoveLocalBranches() === true) {

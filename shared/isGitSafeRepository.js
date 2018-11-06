@@ -1,5 +1,5 @@
 const simpleGit = require('simple-git/promise')();
-const commandExists = require('command-exists').sync;
+const { sync: commandExists } = require('command-exists');
 
 exports.isGitSafeRepository = async () => {
     if (!commandExists('git')) {
