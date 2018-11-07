@@ -4,6 +4,8 @@ const { allBranches } = require('../shared/allBranches');
 const { mainBranchPrompt } = require('./prompts/mainBranchPrompt');
 const { branchesToRemovePrompt } = require('../shared/prompts/branchesToRemovePrompt');
 const { removeSelectedBranchesPrompt } = require('../shared/prompts/removeSelectedBranchesPrompt');
+const { keepSelectedBranchesPrompt } = require('../shared/prompts/keepSelectedBranchesPrompt');
+const { removeSelectedBranches } = require('./removeSelectedBranches');
 const {
     removeAllBranchesExceptMainBranchContent,
     removeSelectedBranchesContent,
@@ -31,14 +33,14 @@ exports.runLocalBranchRemoval = async () => {
         } else if (branchesToRemoveAnswer === removeSelectedBranchesContent) {
             selectedBranchesToRemove = await removeSelectedBranchesPrompt(branchesAvailableForRemoval);
         } else if (branchesToRemoveAnswer === keepSelectedBranchesContent) {
-            //selectedBranchesToRemove = keepSelectedBranchesPrompt();
+            selectedBranchesToRemove = await keepSelectedBranchesPrompt(branchesAvailableForRemoval);
         } else {
             console.log('Oops! Something went wrong.');
             process.exit(1);
         }
-        console.log(JSON.stringify(selectedBranchesToRemove, null , 2));
+
         //run method to remove branches
-        // removeSelectedBranches(selectedBranchesToRemove)
+        removeSelectedBranches(selectedBranchesToRemove);
     }
 
     console.log('\nMoving on...\n');
