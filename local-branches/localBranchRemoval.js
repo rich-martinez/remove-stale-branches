@@ -1,7 +1,7 @@
 const { isGitSafeRepository } = require('../shared/isGitSafeRepository');
 const { shouldRemoveLocalBranches } = require('./shouldRemoveLocalBranches');
 const { allBranches } = require('../shared/allBranches');
-const { mainBranchPrompt } = require('./prompts/mainBranchPrompt');
+const { mainBranchPrompt } = require('./prompts/mainBranch/mainBranchPrompt');
 const { branchesToRemovePrompt } = require('../shared/prompts/branchesToRemovePrompt');
 const { removeSelectedBranchesPrompt } = require('../shared/prompts/removeSelectedBranchesPrompt');
 const { keepSelectedBranchesPrompt } = require('../shared/prompts/keepSelectedBranchesPrompt');

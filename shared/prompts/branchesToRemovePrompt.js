@@ -1,6 +1,8 @@
 const fuzzy = require('fuzzy');
 const inquirer = require('inquirer');
 const { branchRemovalOptionsContent } = require('../branchRemovalOptionsContent');
+const { fuzzyUserOptionSearch } = require('../fuzzyUserOptionSearch');
+
 
 inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
 
@@ -17,12 +19,7 @@ exports.branchesToRemovePrompt = async (branchesAvailableForRemoval, branchRemov
             message: branchRemovalOptionsContent(branchesAvailableForRemoval),
             suggestOnly: false,
             async source(answers, input) {
-                const branchRemovalOptionSearch = await new Promise((resolve) => {
-                    input = input || '';
-                    // TODO: Can I filter with an array full of objects?
-                    let fuzzyResult = fuzzy.filter(input, branchRemovalOptions);
-                    return resolve(fuzzyResult.map(removalOption => removalOption.original));
-                });
+                const branchRemovalOptionSearch = await fuzzyUserOptionSearch(input, branchRemovalOptions);
 
                 return branchRemovalOptionSearch;
             },

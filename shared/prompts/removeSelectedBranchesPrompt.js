@@ -1,5 +1,6 @@
 const fuzzy = require('fuzzy');
 const inquirer = require('inquirer');
+const { fuzzyUserOptionSearch } = require('../fuzzyUserOptionSearch');
 
 inquirer.registerPrompt('checkbox-plus', require('inquirer-checkbox-plus-prompt'));
 
@@ -26,14 +27,10 @@ exports.removeSelectedBranchesPrompt = async (branchesAvailableForRemoval) => {
 
                 return true;
             },
-            async source(answersSoFar, input) {
-                input = input || '';
+            async source(answers, input) {
+                const branchesAvailableForRemoval = await fuzzyUserOptionSearch(input, branchesAvailableForRemoval);
 
-                return await new Promise(resolve => {
-                    const fuzzyResult = fuzzy.filter(input, branchesAvailableForRemoval);
-
-                    return resolve(fuzzyResult.map(branchName => branchName.original));
-                });
+                return branchesAvailableForRemoval;
             },
         }
     ]).then(answer => answer.removeSelectedBranchesPrompt);
