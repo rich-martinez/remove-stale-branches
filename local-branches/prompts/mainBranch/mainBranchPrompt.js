@@ -1,10 +1,11 @@
 const inquirer = require('inquirer');
 const { filter } = require('./filter');
-const { createValidateMethod } = require('./createValidateMethod');
-const { fuzzyUserOptionSearch } = require('../../../shared/fuzzyUserOptionSearch');
+const { createValidateFunction } = require('./createValidateFunction');
+const { createSourceFunction } = require('./createSourceFunction');
 
 exports.mainBranchPrompt = async (branches = []) => {
-    const validate = createValidateMethod(branches);
+    const validate = createValidateFunction(branches);
+    const source = createSourceFunction(branches);
 
     return inquirer.prompt([
         {
@@ -14,11 +15,7 @@ exports.mainBranchPrompt = async (branches = []) => {
             suggestOnly: false,
             filter,
             validate,
-            async source(answers, input) {
-                const branchSearch = await fuzzyUserOptionSearch(input, branches);
-
-                return branchSearch;
-            },
+            source,
         }
     ]).then(answer => answer.mainBranchPrompt);
 }
