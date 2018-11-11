@@ -1,5 +1,4 @@
 const { isGitSafeRepository } = require('../shared/isGitSafeRepository');
-const { shouldRemoveLocalBranches } = require('./shouldRemoveLocalBranches');
 const { allBranches } = require('../shared/allBranches');
 const { mainBranchPrompt } = require('./prompts/mainBranch/mainBranchPrompt');
 const { branchesToRemovePrompt } = require('../shared/prompts/branchesToRemovePrompt');
@@ -12,9 +11,14 @@ const {
     keepSelectedBranchesContent
 } = require('../shared/branchRemovalOptionsContent');
 
-
-exports.runLocalBranchRemoval = async () => {
-    if (isGitSafeRepository() && await shouldRemoveLocalBranches() === true) {
+/**
+ * @param {object} previouslyRemovedBranches - This is intended to be used to provide an additional option
+ *  for the branches to remove prompt. For instance, removing branches remotely that have already been
+ * removed locally.
+ * @returns {array}
+ */
+exports.runLocalBranchRemoval = async (previouslyRemovedBranches) => {
+    if (isGitSafeRepository()) {
         const branches = await allBranches();
         const mainBranchAnswer = await mainBranchPrompt(branches);
         const branchesAvailableForRemoval = branches.filter(branch => branch !== mainBranchAnswer);
@@ -40,7 +44,9 @@ exports.runLocalBranchRemoval = async () => {
         }
 
         //run method to remove branches
-        removeSelectedBranches(selectedBranchesToRemove);
+        const successfullyRemovedBranches = await removeSelectedBranches(selectedBranchesToRemove);
+
+        return successfullyRemovedBranches;
     }
 
     console.log('\nMoving on...\n');
