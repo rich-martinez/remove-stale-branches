@@ -1,4 +1,5 @@
 const simpleGit = require('simple-git/promise')()
+const { asyncForEach } = require('../shared/asyncForEach')
 
 /**
  * @param {string} mainBranch
@@ -11,12 +12,12 @@ exports.removeSelectedBranches = async (mainBranch, branchesToRemove) => {
   // checkout to the main branch before trying to remove any branches
   await simpleGit.checkout(mainBranch);
 
-  branchesToRemove.forEach((branch) => {
-    console.log(`\nRemoving branch: ${branch}\n`)
-    simpleGit.deleteLocalBranch(branch)
+  // make sure all the callbacks have finshed before returning anything
+  await asyncForEach(branchesToRemove, async (branch) => {
+    await simpleGit.deleteLocalBranch(branch)
       .then((branchDeletionSummary) => {
         if (branchDeletionSummary.success) {
-          console.log(`\n${branchDeletionSummary.branch} was successfully removed\n`)
+          console.log(`\n"${branchDeletionSummary.branch}" was successfully removed\n`)
           successfullyRemovedBranches.push(branchDeletionSummary.branch)
         }
       })

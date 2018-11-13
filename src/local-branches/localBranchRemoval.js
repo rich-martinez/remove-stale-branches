@@ -48,6 +48,4 @@ exports.runLocalBranchRemoval = async (previouslyRemovedBranches) => {
 
     return successfullyRemovedBranches
   }
-
-  console.log('\nMoving on...\n')
 }
