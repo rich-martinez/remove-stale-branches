@@ -24,8 +24,8 @@ const removeStaleBranches = async () => {
         }
         removeStalenessContinuationAnswer = await removeStalenessContinuationPrompt();
     }
+
+    console.log(`\n\nYour repository has been freshened up.\n\n`);
 };
 
 removeStaleBranches();
-
-console.log(`\n\nYour repository has been freshened up.\n\n`);

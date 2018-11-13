@@ -44,7 +44,7 @@ exports.runLocalBranchRemoval = async (previouslyRemovedBranches) => {
     }
 
     // run method to remove branches
-    const successfullyRemovedBranches = await removeSelectedBranches(selectedBranchesToRemove)
+    const successfullyRemovedBranches = await removeSelectedBranches(mainBranchAnswer, selectedBranchesToRemove)
 
     return successfullyRemovedBranches
   }
