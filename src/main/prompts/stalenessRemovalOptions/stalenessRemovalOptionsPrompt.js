@@ -1,9 +1,10 @@
 const inquirer = require('inquirer');
-const { filter } = require('./filter');
-const { createValidateFunction } = require('./createValidateFunction');
 const { createSourceFunction } = require('./createSourceFunction');
+const { stalenessRemovalOptions } = require('./stalenessRemovalOptionsContent');
 
 exports.stalenessRemovalOptionsPrompt = async () => {
+    const source = createSourceFunction(stalenessRemovalOptions);
+
     return inquirer.prompt([
         {
             type: 'autocomplete',

@@ -4,6 +4,7 @@ const { fuzzyUserOptionSearch } = require('../../../shared/fuzzyUserOptionSearch
  * @description This creates the source function to be used by the mainBranchPrompt.
  * The function is used to provide a searchable user option source
  * @param {array} branches
+ * @returns {function}
  */
 exports.createSourceFunction = (branches) => {
   return async (answers, input) => {
