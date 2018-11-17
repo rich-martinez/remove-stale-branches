@@ -12,7 +12,11 @@ const { branchesToRemove } = require('../shared/branchesToRemove')
  * @returns {array}
  */
 exports.runRemoteBranchRemoval = async (previouslyRemovedBranches) => {
-  if (isGitSafeRepository()) {
+  if (isGitSafeRepository() === false) {
+    console.error('\n\nThis command only works if it is run from a git repository.\n\n')
+    process.exit(1)
+  }
+
     let removedBranches = [];
     const remotes = await allRemotes()
 
@@ -36,5 +40,4 @@ exports.runRemoteBranchRemoval = async (previouslyRemovedBranches) => {
     removedBranches = await removeSelectedBranches(selectedBranchesToRemove, remoteNameAnswer)
 
     return removedBranches
-  }
 }
