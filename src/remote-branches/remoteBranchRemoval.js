@@ -33,7 +33,7 @@ exports.runRemoteBranchRemoval = async (previouslyRemovedBranches) => {
     const selectedBranchesToRemove = await branchesToRemove(allBranchesAvailableForRemoval)
 
     // run method to remove branches
-    removedBranches = await removeSelectedBranches(selectedBranchesToRemove)
+    removedBranches = await removeSelectedBranches(selectedBranchesToRemove, remoteNameAnswer)
 
     return removedBranches
   }

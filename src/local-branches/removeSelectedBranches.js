@@ -17,7 +17,7 @@ exports.removeSelectedBranches = async (mainBranch, branchesToRemove) => {
     await simpleGit.deleteLocalBranch(branch)
       .then((branchDeletionSummary) => {
         if (branchDeletionSummary.success) {
-          console.log(`\n"${branchDeletionSummary.branch}" was successfully removed\n`)
+          console.log(`\n"${branchDeletionSummary.branch}" was successfully removed.\n`)
           successfullyRemovedBranches.push(branchDeletionSummary.branch)
         }
       })

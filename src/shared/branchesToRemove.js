@@ -2,7 +2,7 @@ const { branchesToRemovePrompt } = require('./prompts/branchesToRemovePrompt')
 const { removeSelectedBranchesPrompt } = require('./prompts/removeSelectedBranchesPrompt')
 const { keepSelectedBranchesPrompt } = require('./prompts/keepSelectedBranchesPrompt')
 const {
-  removeAllBranchesExceptMainBranchContent,
+  removeAllAvailableBranchesContent,
   removeSelectedBranchesContent,
   keepSelectedBranchesContent
 } = require('./branchRemovalOptionsContent')
@@ -17,14 +17,14 @@ exports.branchesToRemove = async (branchesAvailableForRemoval) => {
   const branchesToRemoveAnswer = await branchesToRemovePrompt(
     branchesAvailableForRemoval,
     [
-      removeAllBranchesExceptMainBranchContent,
+      removeAllAvailableBranchesContent,
       removeSelectedBranchesContent,
       keepSelectedBranchesContent
     ]
   )
   let selectedBranchesToRemove = []
 
-  if (branchesToRemoveAnswer === removeAllBranchesExceptMainBranchContent) {
+  if (branchesToRemoveAnswer === removeAllAvailableBranchesContent) {
     selectedBranchesToRemove = branchesAvailableForRemoval
   } else if (branchesToRemoveAnswer === removeSelectedBranchesContent) {
     selectedBranchesToRemove = await removeSelectedBranchesPrompt(branchesAvailableForRemoval)
