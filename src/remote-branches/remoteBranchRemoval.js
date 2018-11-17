@@ -1,16 +1,9 @@
 const { isGitSafeRepository } = require('../shared/isGitSafeRepository')
 const { allRemotes } = require('../remote-branches/allRemotes')
-const { branchesToRemovePrompt } = require('../shared/prompts/branchesToRemovePrompt')
-const { removeSelectedBranchesPrompt } = require('../shared/prompts/removeSelectedBranchesPrompt')
-const { keepSelectedBranchesPrompt } = require('../shared/prompts/keepSelectedBranchesPrompt')
 const { removeSelectedBranches } = require('./removeSelectedBranches')
-const {
-  removeAllBranchesExceptMainBranchContent,
-  removeSelectedBranchesContent,
-  keepSelectedBranchesContent
-} = require('../shared/branchRemovalOptionsContent')
 const { remoteNamePrompt } = require('./prompts/remoteNamePrompt')
 const { branchesAvailableForRemoval } = require('./branchesAvailableForRemoval');
+const { branchesToRemove } = require('../shared/branchesToRemove')
 
 /**
  * @param {object} previouslyRemovedBranches - This is intended to be used to provide an additional option
@@ -37,26 +30,7 @@ exports.runRemoteBranchRemoval = async (previouslyRemovedBranches) => {
       return removedBranches;
     }
 
-    const branchesToRemoveAnswer = await branchesToRemovePrompt(
-      allBranchesAvailableForRemoval,
-      [
-        removeAllBranchesExceptMainBranchContent,
-        removeSelectedBranchesContent,
-        keepSelectedBranchesContent
-      ]
-    )
-    let selectedBranchesToRemove = []
-
-    if (branchesToRemoveAnswer === removeAllBranchesExceptMainBranchContent) {
-      selectedBranchesToRemove = allBranchesAvailableForRemoval
-    } else if (branchesToRemoveAnswer === removeSelectedBranchesContent) {
-      selectedBranchesToRemove = await removeSelectedBranchesPrompt(allBranchesAvailableForRemoval)
-    } else if (branchesToRemoveAnswer === keepSelectedBranchesContent) {
-      selectedBranchesToRemove = await keepSelectedBranchesPrompt(allBranchesAvailableForRemoval)
-    } else {
-      console.log('Oops! Something went wrong.')
-      process.exit(1)
-    }
+    const selectedBranchesToRemove = await branchesToRemove(allBranchesAvailableForRemoval)
 
     // run method to remove branches
     removedBranches = await removeSelectedBranches(selectedBranchesToRemove)
