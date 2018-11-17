@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "coverage": "jest --coverage",
-    "lint": "$(npm bin)/standard --fix src/**/*.js tests/**/*.js"
+    "lint": "$(npm bin)/standard --fix src/**/*.js tests/**/*.js",
+    "generateDocs": "$(npm bin)/documentation build src/** -f md -o docs.md"
   },
   "keywords": [
     "git",
@@ -21,6 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "command-exists": "^1.2.8",
+    "documentation": "^8.1.2",
     "fuzzy": "^0.1.3",
     "inquirer": "^6.2.0",
     "inquirer-autocomplete-prompt": "^1.0.1",

@@ -2,6 +2,9 @@ const inquirer = require('inquirer');
 const { createSourceFunction } = require('./createSourceFunction');
 const { stalenessRemovalOptions } = require('./stalenessRemovalOptionsContent');
 
+/**
+ * @returns {Promise}
+ */
 exports.stalenessRemovalOptionsPrompt = async () => {
     const source = createSourceFunction(stalenessRemovalOptions);
 
