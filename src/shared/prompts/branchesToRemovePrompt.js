@@ -3,15 +3,12 @@ const inquirer = require('inquirer');
 const { branchRemovalOptionsContent } = require('../branchRemovalOptionsContent');
 const { fuzzyUserOptionSearch } = require('../fuzzyUserOptionSearch');
 
-
 inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
 
+/**
+ * @param {array} branchesAvailableForRemoval
+ */
 exports.branchesToRemovePrompt = async (branchesAvailableForRemoval, branchRemovalOptions) => {
-    if (branchesAvailableForRemoval.length === 0) {
-        console.log(`\n\nThere are no local branches available for removal.\n\n`);
-        process.exit(1);
-    }
-
     return inquirer.prompt([
         {
             type: 'autocomplete',

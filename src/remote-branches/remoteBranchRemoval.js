@@ -1,6 +1,5 @@
 const { isGitSafeRepository } = require('../shared/isGitSafeRepository')
-const { allLocalBranches } = require('../local-branches/allLocalBranches')
-const { mainBranchPrompt } = require('./prompts/mainBranchPrompt')
+const { allRemotes } = require('../remote-branches/allRemotes')
 const { branchesToRemovePrompt } = require('../shared/prompts/branchesToRemovePrompt')
 const { removeSelectedBranchesPrompt } = require('../shared/prompts/removeSelectedBranchesPrompt')
 const { keepSelectedBranchesPrompt } = require('../shared/prompts/keepSelectedBranchesPrompt')
@@ -10,6 +9,8 @@ const {
   removeSelectedBranchesContent,
   keepSelectedBranchesContent
 } = require('../shared/branchRemovalOptionsContent')
+const { remoteNamePrompt } = require('./prompts/remoteNamePrompt')
+const { branchesAvailableForRemoval } = require('./branchesAvailableForRemoval');
 
 /**
  * @param {object} previouslyRemovedBranches - This is intended to be used to provide an additional option
@@ -17,20 +18,27 @@ const {
  * removed locally.
  * @returns {array}
  */
-exports.runLocalBranchRemoval = async (previouslyRemovedBranches) => {
+exports.runRemoteBranchRemoval = async (previouslyRemovedBranches) => {
   if (isGitSafeRepository()) {
     let removedBranches = [];
-    const localBranches = await allLocalBranches()
+    const remotes = await allRemotes()
 
-    if (localBranches.length === 0) {
-      console.log('\nThere are no local branches available for removal.\n');
+    if (remotes.length === 0) {
+      console.log('\nThere are no remotes available for branch removal.\n');
       return removedBranches;
     }
 
-    const mainBranchAnswer = await mainBranchPrompt(localBranches)
-    const branchesAvailableForRemoval = localBranches.filter(branch => branch !== mainBranchAnswer)
+    const remoteNameAnswer = await remoteNamePrompt(remotes)
+    const remoteNameIdentifier = `${remoteNameAnswer}/`
+    const allBranchesAvailableForRemoval =  await branchesAvailableForRemoval(remoteNameIdentifier)
+
+    if (allBranchesAvailableForRemoval.length === 0) {
+      console.log('\nThere are no branches in that remote that are available for removal.\n');
+      return removedBranches;
+    }
+
     const branchesToRemoveAnswer = await branchesToRemovePrompt(
-      branchesAvailableForRemoval,
+      allBranchesAvailableForRemoval,
       [
         removeAllBranchesExceptMainBranchContent,
         removeSelectedBranchesContent,
@@ -40,18 +48,18 @@ exports.runLocalBranchRemoval = async (previouslyRemovedBranches) => {
     let selectedBranchesToRemove = []
 
     if (branchesToRemoveAnswer === removeAllBranchesExceptMainBranchContent) {
-      selectedBranchesToRemove = branchesAvailableForRemoval
+      selectedBranchesToRemove = allBranchesAvailableForRemoval
     } else if (branchesToRemoveAnswer === removeSelectedBranchesContent) {
-      selectedBranchesToRemove = await removeSelectedBranchesPrompt(branchesAvailableForRemoval)
+      selectedBranchesToRemove = await removeSelectedBranchesPrompt(allBranchesAvailableForRemoval)
     } else if (branchesToRemoveAnswer === keepSelectedBranchesContent) {
-      selectedBranchesToRemove = await keepSelectedBranchesPrompt(branchesAvailableForRemoval)
+      selectedBranchesToRemove = await keepSelectedBranchesPrompt(allBranchesAvailableForRemoval)
     } else {
       console.log('Oops! Something went wrong.')
       process.exit(1)
     }
 
     // run method to remove branches
-    removedBranches = await removeSelectedBranches(mainBranchAnswer, selectedBranchesToRemove)
+    removedBranches = await removeSelectedBranches(selectedBranchesToRemove)
 
     return removedBranches
   }
