@@ -35,5 +35,5 @@ exports.branchesToRemove = async (branchesAvailableForRemoval) => {
     process.exit(1)
   }
 
-  return selectedBranchesToRemove;
+  return selectedBranchesToRemove
 }

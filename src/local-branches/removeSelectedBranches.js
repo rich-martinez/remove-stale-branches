@@ -10,7 +10,7 @@ exports.removeSelectedBranches = async (mainBranch, branchesToRemove) => {
   let successfullyRemovedBranches = []
 
   // checkout to the main branch before trying to remove any branches
-  await simpleGit.checkout(mainBranch);
+  await simpleGit.checkout(mainBranch)
 
   // make sure all the callbacks have finshed before returning anything
   await asyncForEach(branchesToRemove, async (branch) => {

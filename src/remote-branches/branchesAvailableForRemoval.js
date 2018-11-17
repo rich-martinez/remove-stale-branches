@@ -1,4 +1,4 @@
-const simpleGit = require('simple-git/promise')();
+const simpleGit = require('simple-git/promise')()
 
 /**
  * @param {string}
@@ -9,5 +9,5 @@ exports.branchesAvailableForRemoval = async (remoteNameIdentifier) => {
 
   return remoteBranches
     .filter(remoteBranch => remoteBranch.startsWith(remoteNameIdentifier))
-    .map(remoteBranch => remoteBranch.replace(remoteNameIdentifier, ''));
+    .map(remoteBranch => remoteBranch.replace(remoteNameIdentifier, ''))
 }
