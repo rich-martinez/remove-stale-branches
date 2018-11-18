@@ -1,4 +1,4 @@
-const { removeStaleBranches } = require('../src/removeStaleBranches');
+const { removeStaleBranches } = require('../src/core/removeStaleBranches');
 const { removeLocalBranches, removeRemoteBranches } = require('../src/core/prompts/staleness-removal-options/stalenessRemovalOptionsContent');
 const { stalenessRemovalOptionsPrompt } = require('../src/core/prompts/staleness-removal-options/stalenessRemovalOptionsPrompt');
 const { removeStalenessContinuationPrompt } = require('../src/core/prompts/staleness-removal-continuation/removeStalenessContinuationPrompt');
