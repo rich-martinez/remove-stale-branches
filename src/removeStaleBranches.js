@@ -33,4 +33,6 @@ const removeStaleBranches = async () => {
     console.log(`\n\nThat's a wrap.\n\n`);
 };
 
+exports.removeStaleBranches = removeStaleBranches;
+
 removeStaleBranches();
