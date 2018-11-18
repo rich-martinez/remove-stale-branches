@@ -1,12 +1,12 @@
 const inquirer = require('inquirer');
-const { createSourceFunction } = require('./createSourceFunction');
+const { createBranchNameSelector } = require('../../../shared/prompt-functions/createBranchNameSelector');
 const { stalenessRemovalOptions } = require('./stalenessRemovalOptionsContent');
 
 /**
  * @returns {Promise}
  */
 exports.stalenessRemovalOptionsPrompt = async () => {
-    const source = createSourceFunction(stalenessRemovalOptions);
+    const source = createBranchNameSelector(stalenessRemovalOptions);
 
     return inquirer.prompt([
         {

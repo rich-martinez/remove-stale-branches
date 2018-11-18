@@ -4,11 +4,11 @@
  * This is the entry point for removing stale remote/local branches.
  */
 const removeStaleBranches = async () => {
-    const { stalenessRemovalOptionsPrompt } = require('./main/prompts/stalenessRemovalOptions/stalenessRemovalOptionsPrompt');
-    const { removeStalenessContinuationPrompt } = require('./main/prompts/removeStalenessContinuation/removeStalenessContinuationPrompt');
+    const { stalenessRemovalOptionsPrompt } = require('./main/prompts/staleness-removal-options/stalenessRemovalOptionsPrompt');
+    const { removeStalenessContinuationPrompt } = require('./main/prompts/staleness-removal-continuation/removeStalenessContinuationPrompt');
     const { runLocalBranchRemoval } = require('./local-branches/localBranchRemoval');
     const { runRemoteBranchRemoval } = require('./remote-branches/remoteBranchRemoval');
-    const { removeLocalBranches, removeRemoteBranches } = require('./main/prompts/stalenessRemovalOptions/stalenessRemovalOptionsContent');
+    const { removeLocalBranches, removeRemoteBranches } = require('./main/prompts/staleness-removal-options/stalenessRemovalOptionsContent');
 
     let removeStalenessContinuationAnswer = true;
     let previouslyRemovedBranches = {
