@@ -1,7 +1,7 @@
 const { stalenessRemovalOptionsPrompt } = require('./prompts/staleness-removal-options/stalenessRemovalOptionsPrompt');
 const { removeStalenessContinuationPrompt } = require('./prompts/staleness-removal-continuation/removeStalenessContinuationPrompt');
-const { runLocalBranchRemoval } = require('./local-branches/localBranchRemoval');
-const { runRemoteBranchRemoval } = require('./remote-branches/remoteBranchRemoval');
+const { runLocalBranchRemoval } = require('../local-branches/localBranchRemoval');
+const { runRemoteBranchRemoval } = require('../remote-branches/remoteBranchRemoval');
 const { removeLocalBranches, removeRemoteBranches } = require('./prompts/staleness-removal-options/stalenessRemovalOptionsContent');
 
 /**

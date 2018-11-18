@@ -2,7 +2,7 @@
   "name": "remove-stale-branches",
   "version": "1.0.0",
   "description": "Attempt to remove stale branches based on user input.",
-  "main": "remove-stale-branches.js",
+  "main": "entry.js",
   "scripts": {
     "test": "jest",
     "coverage": "jest --coverage",
