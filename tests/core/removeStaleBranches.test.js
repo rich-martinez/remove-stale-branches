@@ -1,14 +1,14 @@
-const { removeStaleBranches } = require('../src/core/removeStaleBranches');
-const { removeLocalBranches, removeRemoteBranches } = require('../src/core/prompts/staleness-removal-options/stalenessRemovalOptionsContent');
-const { stalenessRemovalOptionsPrompt } = require('../src/core/prompts/staleness-removal-options/stalenessRemovalOptionsPrompt');
-const { removeStalenessContinuationPrompt } = require('../src/core/prompts/staleness-removal-continuation/removeStalenessContinuationPrompt');
-const { runLocalBranchRemoval } = require('../src/local-branches/localBranchRemoval');
-const { runRemoteBranchRemoval } = require('../src/remote-branches/remoteBranchRemoval');
+const { removeStaleBranches } = require('../../src/core/removeStaleBranches');
+const { removeLocalBranches, removeRemoteBranches } = require('../../src/core/prompts/staleness-removal-options/stalenessRemovalOptionsContent');
+const { stalenessRemovalOptionsPrompt } = require('../../src/core/prompts/staleness-removal-options/stalenessRemovalOptionsPrompt');
+const { removeStalenessContinuationPrompt } = require('../../src/core/prompts/staleness-removal-continuation/removeStalenessContinuationPrompt');
+const { runLocalBranchRemoval } = require('../../src/local-branches/localBranchRemoval');
+const { runRemoteBranchRemoval } = require('../../src/remote-branches/remoteBranchRemoval');
 
-jest.mock('../src/core/prompts/staleness-removal-options/stalenessRemovalOptionsPrompt');
-jest.mock('../src/local-branches/localBranchRemoval');
-jest.mock('../src/remote-branches/remoteBranchRemoval');
-jest.mock('../src/core/prompts/staleness-removal-continuation/removeStalenessContinuationPrompt');
+jest.mock('../../src/core/prompts/staleness-removal-options/stalenessRemovalOptionsPrompt');
+jest.mock('../../src/local-branches/localBranchRemoval');
+jest.mock('../../src/remote-branches/remoteBranchRemoval');
+jest.mock('../../src/core/prompts/staleness-removal-continuation/removeStalenessContinuationPrompt');
 
  test('User runs local branch removal and then runs remote branch removal.', async () => {
   const removedLocalBranches = ['local-branch-one', 'local-branch-two'];
