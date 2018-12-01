@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const { createStringTrimFilter } = require('../../shared/prompt-functions/createStringTrimFilter');
 const { createBranchNameValidator } = require('../../shared/prompt-functions/createBranchNameValidator');
-const { createBranchNameSelector } = require('../../shared/prompt-functions/createBranchNameSelector');
+const { createUserOptionSelector } = require('../../shared/prompt-functions/createUserOptionSelector');
 
 /**
  * @param {array} branches
@@ -9,7 +9,7 @@ const { createBranchNameSelector } = require('../../shared/prompt-functions/crea
  */
 exports.mainBranchPrompt = async (branches) => {
     const validate = createBranchNameValidator(branches);
-    const source = createBranchNameSelector(branches);
+    const source = createUserOptionSelector(branches);
     const filter = createStringTrimFilter();
 
     return inquirer.prompt([

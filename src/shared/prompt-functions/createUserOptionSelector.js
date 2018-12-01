@@ -3,13 +3,13 @@ const { fuzzyUserOptionSearch } = require('../fuzzyUserOptionSearch');
 /**
  * @description The function is used to create a callback for providing a searchable user option source.
  * The callback intended to be used as a source function for an inquirer prompt.
- * @param {array} branches
+ * @param {array} options
  * @returns {function}
  */
-exports.createBranchNameSelector = (branches) => {
+exports.createUserOptionSelector = (options) => {
   return async (answers, input) => {
-    const branchSearch = await fuzzyUserOptionSearch(input, branches);
+    const optionSearch = await fuzzyUserOptionSearch(input, options);
 
-    return branchSearch;
+    return optionSearch;
   }
 }
