@@ -1,4 +1,4 @@
-const fuzzy = require('fuzzy')
+const { filter } = require('fuzzy')
 
 /**
  * @param {string} userInput
@@ -7,7 +7,7 @@ const fuzzy = require('fuzzy')
  */
 exports.fuzzyUserOptionSearch = async (userInput, searchableItems) => {
   userInput = userInput || ''
-  let fuzzyResult = await fuzzy.filter(userInput, searchableItems)
+  let fuzzyResult = await filter(userInput, searchableItems)
 
   return fuzzyResult.map(item => item.original)
 }

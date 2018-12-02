@@ -1,4 +1,4 @@
-const simpleGit = require('simple-git/promise')()
+const simpleGit = require('simple-git/promise')
 const { sync: commandExists } = require('command-exists')
 
 /**
@@ -11,7 +11,7 @@ exports.isGitSafeRepository = async () => {
     return false
   }
 
-  if (await simpleGit.checkIsRepo() === false) {
+  if (await simpleGit().checkIsRepo() === false) {
     console.log('\nPlease run this command from a git repository.\n')
     return false
   }
