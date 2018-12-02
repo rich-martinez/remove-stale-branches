@@ -4,7 +4,6 @@ const { isGitSafeRepository } = require('../../src/shared/isGitSafeRepository');
 
 jest.mock('simple-git/promise');
 jest.mock('command-exists');
-jest.mock('simple-git/promise');
 
 global.console = {log: jest.fn()};
 
