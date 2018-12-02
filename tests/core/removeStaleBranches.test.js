@@ -10,6 +10,8 @@ jest.mock('../../src/local-branches/localBranchRemoval');
 jest.mock('../../src/remote-branches/remoteBranchRemoval');
 jest.mock('../../src/core/prompts/staleness-removal-continuation/removeStalenessContinuationPrompt');
 
+global.console = {log: jest.fn()};
+
  test('User runs local branch removal and then runs remote branch removal.', async () => {
   const removedLocalBranches = ['local-branch-one', 'local-branch-two'];
   const removedRemoteBranches = [];
@@ -50,5 +52,7 @@ jest.mock('../../src/core/prompts/staleness-removal-continuation/removeStaleness
   expect(removeStalenessContinuationPrompt).nthReturnedWith(2, false);
   expect(removeStalenessContinuationPrompt).toBeCalledTimes(2);
 
-  expect.assertions(11);
+  expect(console.log).toBeCalledWith(`\n\nThat's a wrap.\n\n`);
+
+  expect.assertions(12);
 });
