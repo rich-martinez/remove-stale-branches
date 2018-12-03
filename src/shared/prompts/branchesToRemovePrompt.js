@@ -1,4 +1,3 @@
-const fuzzy = require('fuzzy');
 const inquirer = require('inquirer');
 const { branchRemovalOptionsContent } = require('../branchRemovalOptionsContent');
 const { fuzzyUserOptionSearch } = require('../fuzzyUserOptionSearch');

@@ -1,4 +1,3 @@
-
 const { prompt } = require('inquirer');
 const { createUserOptionSelector } = require('../../../../src/shared/prompt-functions/createUserOptionSelector');
 const { removeLocalBranches, removeRemoteBranches } = require('../../../../src/core/prompts/staleness-removal-options/stalenessRemovalOptionsContent');

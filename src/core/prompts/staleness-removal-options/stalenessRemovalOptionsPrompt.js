@@ -1,4 +1,4 @@
-const inquirer = require('inquirer');
+const { prompt } = require('inquirer');
 const { createUserOptionSelector } = require('../../../shared/prompt-functions/createUserOptionSelector');
 const { stalenessRemovalOptions } = require('./stalenessRemovalOptionsContent');
 
@@ -8,7 +8,7 @@ const { stalenessRemovalOptions } = require('./stalenessRemovalOptionsContent');
 exports.stalenessRemovalOptionsPrompt = async () => {
     const source = createUserOptionSelector(stalenessRemovalOptions);
 
-    return inquirer.prompt([
+    return prompt([
         {
             type: 'autocomplete',
             name: 'stalenessRemovalOptionsPrompt',

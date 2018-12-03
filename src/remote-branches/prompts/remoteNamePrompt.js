@@ -1,4 +1,4 @@
-const inquirer = require('inquirer');
+const { prompt } = require('inquirer');
 const { createStringTrimFilter } = require('../../shared/prompt-functions/createStringTrimFilter');
 const { createBranchNameValidator } = require('../../shared/prompt-functions/createBranchNameValidator');
 const { createUserOptionSelector } = require('../../shared/prompt-functions/createUserOptionSelector');
@@ -12,7 +12,7 @@ exports.remoteNamePrompt = async (branches) => {
     const source = createUserOptionSelector(branches);
     const filter = createStringTrimFilter();
 
-    return inquirer.prompt([
+    return prompt([
         {
             type: 'autocomplete',
             name: 'remoteNamePrompt',
