@@ -2,7 +2,7 @@ const { branchRemovalOptionsContent } = require('../../src/shared/branchRemovalO
 
 global.console = {error: jest.fn()};
 const processExit = jest
-  .spyOn(process, "exit")
+  .spyOn(process, 'exit')
   .mockImplementation(number => number);
 
 test('No argument given will console.error and exit the process.', () => {
