@@ -5,7 +5,7 @@ const { removeSelectedBranchesPrompt } = require('../../../src/shared/prompts/re
 jest.mock('inquirer');
 jest.mock('../../../src/shared/prompt-functions/createUserOptionSelector');
 
-test('User selection resolves to a branch removal strategy option.', async () => {
+test('User selection resolves to a list a branches to remove.', async () => {
   const branchesAvailableForRemoval = ['branch1', 'branch2', 'branch2'];
   const expectedBranchesToRemove = ['branch1', 'branch2'];
   const source = jest.fn();

@@ -6,8 +6,8 @@ const { createBranchAvailabilityValidator } = require('../../../src/shared/promp
 inquirer.registerPrompt('checkbox-plus', require('inquirer-checkbox-plus-prompt'));
 
 /**
- * @description A prompt that resolves to a list of branches that will be saved while all the other branches
- * available for removal will be deleted.
+ * @description A prompt that resolves to a list of branches to remove. It filter the user selection from the
+ * branches available for removal and returns the result.
  * @param {array} branchesAvailableForRemoval
  * @returns {Promise}
  */
@@ -19,7 +19,7 @@ exports.keepSelectedBranchesPrompt = async (branchesAvailableForRemoval) => {
     return inquirer.prompt([
         {
             type: 'checkbox-plus',
-            name: 'removeSelectedBranchesPrompt',
+            name: 'keepSelectedBranchesPrompt',
             message: 'Select only the branches you want to keep. (use spacebar to select/deselect options)',
             highlight: true,
             searchable: true,
@@ -27,5 +27,5 @@ exports.keepSelectedBranchesPrompt = async (branchesAvailableForRemoval) => {
             validate,
             source,
         }
-    ]).then(answer => answer.removeSelectedBranchesPrompt);
+    ]).then(answer => answer.keepSelectedBranchesPrompt);
 }
