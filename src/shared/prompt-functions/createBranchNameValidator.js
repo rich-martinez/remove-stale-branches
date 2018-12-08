@@ -3,7 +3,7 @@
  * exists in the branch names given.
  * The callback intended to be used as a validate function for an inquirer prompt.
  * @param {array} branches
- * @returns {bool}
+ * @returns {function}
  */
 exports.createBranchNameValidator = (branches) => {
   return async (answer) => {
