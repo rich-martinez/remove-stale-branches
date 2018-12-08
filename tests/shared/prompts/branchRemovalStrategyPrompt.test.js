@@ -7,7 +7,7 @@ jest.mock('inquirer');
 jest.mock('../../../src/shared/prompt-functions/createUserOptionSelector');
 jest.mock('../../../src/shared/branchRemovalOptionsContent');
 
-test('User selection resolves to a list of branches that will be removed.', async () => {
+test('User selection resolves to a branch removal strategy option.', async () => {
   const branchesAvailableForRemoval = ['branch1', 'branch2', 'branch2'];
   const expectedRemovalOption = 'branchRemovalOption1';
   const branchRemovalOptions = [expectedRemovalOption, 'branchRemovalOption2'];
