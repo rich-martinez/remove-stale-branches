@@ -1,4 +1,4 @@
-const { branchesToRemovePrompt } = require('./prompts/branchesToRemovePrompt')
+const { branchRemovalStrategyPrompt } = require('./prompts/branchRemovalStrategyPrompt')
 const { removeSelectedBranchesPrompt } = require('./prompts/removeSelectedBranchesPrompt')
 const { keepSelectedBranchesPrompt } = require('./prompts/keepSelectedBranchesPrompt')
 const {
@@ -14,7 +14,7 @@ const {
  * @returns {Promise}
  */
 exports.branchesToRemove = async (branchesAvailableForRemoval) => {
-  const branchesToRemoveAnswer = await branchesToRemovePrompt(
+  const branchesToRemoveAnswer = await branchRemovalStrategyPrompt(
     branchesAvailableForRemoval,
     [
       removeAllAvailableBranchesContent,
