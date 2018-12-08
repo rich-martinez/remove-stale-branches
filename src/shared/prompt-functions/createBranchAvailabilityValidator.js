@@ -11,7 +11,7 @@ exports.createBranchAvailabilityValidator = (branchesAvailableForRemoval) => {
     }
 
     if (!answer.some(branch => branchesAvailableForRemoval.includes(branch))) {
-        return `\n\n${branch} is not one of the available branches:\n${JSON.stringify(branchesAvailableForRemoval, null, 2)}\n\n`;
+        return `\n\n${answer} must contain one of the available branches:\n${JSON.stringify(branchesAvailableForRemoval, null, 2)}\n\n`;
     }
 
     return true;
