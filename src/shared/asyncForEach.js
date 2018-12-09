@@ -1,4 +1,5 @@
 /**
+ * @description This is intended to be an async alternative to Array.prototype.forEach().
  * @param {array} array
  * @param {function} callback
  */
