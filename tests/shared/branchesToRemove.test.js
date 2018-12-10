@@ -29,4 +29,30 @@ test('All branches available for removal will be removed', async () => {
       ],
     )
   expect(theBranchesToRemove).toBe(branchesAvailableForRemoval);
+  expect(removeSelectedBranchesPrompt).toBeCalledTimes(0);
+  expect(keepSelectedBranchesPrompt).toBeCalledTimes(0);
+  });
+
+test('Only user selected branches will be removed.', async () => {
+  const branchesAvailableForRemoval = ['branch1', 'branch2', 'branch3', 'branch4'];
+  const userSelectedBranches = ['branch1', 'branch4'];
+  branchRemovalStrategyPrompt.mockReturnValue(removeSelectedBranchesContent);
+  removeSelectedBranchesPrompt.mockReturnValue(userSelectedBranches);
+
+  const theBranchesToRemove = await branchesToRemove(branchesAvailableForRemoval);
+
+  expect(branchRemovalStrategyPrompt).toBeCalledTimes(1);
+  expect(branchRemovalStrategyPrompt)
+    .toBeCalledWith(
+      branchesAvailableForRemoval,
+      [
+        removeAllAvailableBranchesContent,
+        removeSelectedBranchesContent,
+        keepSelectedBranchesContent,
+      ],
+    )
+  expect(theBranchesToRemove).toBe(userSelectedBranches);
+  expect(keepSelectedBranchesPrompt).toBeCalledTimes(0);
+  expect(removeSelectedBranchesPrompt).toBeCalledTimes(1);
+  expect(removeSelectedBranchesPrompt).toBeCalledWith(branchesAvailableForRemoval);
 });
