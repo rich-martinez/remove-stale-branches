@@ -11,9 +11,9 @@ const { branchesToRemove } = require('../shared/branchesToRemove')
  * @returns {array}
  */
 exports.runLocalBranchRemoval = async (previouslyRemovedBranches) => {
-  if (isGitSafeRepository() === false) {
-    console.error('\n\nThis command only works if it is run from a git repository.\n\n')
-    process.exit(1)
+  if (await isGitSafeRepository() === false) {
+    console.error('\n\nThis command only works if it is run from a git repository.\n\n');
+    return process.exit(1);
   }
 
   let removedBranches = []
