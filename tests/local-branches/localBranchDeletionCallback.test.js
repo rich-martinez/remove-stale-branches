@@ -5,6 +5,7 @@ jest.mock('simple-git/promise');
 
 global.console= {
   log: jest.fn(),
+  error: jest.fn(),
 };
 
 const branchName = 'test';
@@ -24,4 +25,21 @@ test('The branch was successfully removed', async () => {
   expect(removedBranch).toEqual(branchName);
   expect(console.log).toBeCalledTimes(1);
   expect(console.log).toBeCalledWith(`\n"test" was successfully removed.\n`);
+});
+
+test('Deleting a local branch promise is rejected.', async () => {
+  const consoleError = 'Something went wrong with deleting the branch';
+  const simpleGitDeleteLocalBranch = jest.fn((branch) => {
+    return Promise.reject(consoleError);
+  });
+  simpleGit.mockReturnValue({deleteLocalBranch: simpleGitDeleteLocalBranch});
+
+  const removedBranch = await localBranchDeletionCallback(branchName);
+
+  expect(simpleGit).toBeCalledTimes(1);
+  expect(simpleGitDeleteLocalBranch).toBeCalledTimes(1);
+  expect(simpleGitDeleteLocalBranch).toBeCalledWith(branchName);
+  expect(removedBranch).toEqual(undefined);
+  expect(console.error).toBeCalledTimes(1);
+  expect(console.error).toBeCalledWith(consoleError);
 });
