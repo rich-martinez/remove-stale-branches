@@ -1,7 +1,7 @@
 const simpleGit = require('simple-git/promise')()
 
 /**
- * @param {string}
+ * @param {string} remoteNameIdentifier
  * @returns {Promise}
  */
 exports.branchesAvailableForRemoval = async (remoteNameIdentifier) => {
