@@ -8,11 +8,11 @@
  */
 exports.asyncForEach = async (array, callback, callbackReturnValues = []) => {
   for (let index = 0; index < array.length; index++) {
-    const callbackReturnValue = await callback(array[index], index, array);
+    const callbackReturnValue = await callback(array[index], index, array)
     if (callbackReturnValue !== undefined) {
-      callbackReturnValues.push(callbackReturnValue);
+      callbackReturnValues.push(callbackReturnValue)
     }
   }
 
-  return callbackReturnValues;
+  return callbackReturnValues
 }

@@ -31,7 +31,7 @@ exports.branchesToRemove = async (branchesAvailableForRemoval) => {
   } else if (branchesToRemoveAnswer === keepSelectedBranchesContent) {
     selectedBranchesToRemove = await keepSelectedBranchesPrompt(branchesAvailableForRemoval)
   } else {
-    console.log('No branches will be removed');
+    console.log('No branches will be removed')
   }
 
   return selectedBranchesToRemove
