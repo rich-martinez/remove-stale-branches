@@ -4,12 +4,13 @@ const { createBranchNameValidator } = require('../../shared/prompt-functions/cre
 const { createUserOptionSelector } = require('../../shared/prompt-functions/createUserOptionSelector');
 
 /**
- * @param {array} branches
+ * @description Prompt the user to choose an available remote to be used to remove remote branches.
+ * @param {array} remotes
  * @returns {Promise}
  */
-exports.remoteNamePrompt = async (branches) => {
-    const validate = createBranchNameValidator(branches);
-    const source = createUserOptionSelector(branches);
+exports.remoteNamePrompt = async (remotes) => {
+    const validate = createBranchNameValidator(remotes);
+    const source = createUserOptionSelector(remotes);
     const filter = createStringTrimFilter();
 
     return prompt([
