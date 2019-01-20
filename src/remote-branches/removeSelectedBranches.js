@@ -1,5 +1,5 @@
-const simpleGit = require('simple-git/promise')()
 const { asyncForEach } = require('../shared/asyncForEach')
+const { remoteBranchDeletionCallback } = require('./remoteBranchDeletionCallback');
 
 /**
  * @param {array} branchesToRemove
@@ -7,19 +7,7 @@ const { asyncForEach } = require('../shared/asyncForEach')
  * @returns {array}
  */
 exports.removeSelectedBranches = async (branchesToRemove, remote) => {
-  let successfullyRemovedBranches = []
+  const successfullyRemovedBranches = await asyncForEach(branchesToRemove, remoteBranchDeletionCallback)
 
-  // make sure all the callbacks have finshed before returning anything
-  await asyncForEach(branchesToRemove, async (branch) => {
-    await simpleGit.push(remote, branch, { '--delete': null })
-      .then(success => {
-        console.log(`\n"${branch}" was successfully removed.\n`)
-        successfullyRemovedBranches.push(branch)
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-  })
-
-  return successfullyRemovedBranches
+  return successfullyRemovedBranches;
 }
