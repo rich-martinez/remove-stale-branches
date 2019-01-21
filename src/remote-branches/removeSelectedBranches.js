@@ -1,4 +1,4 @@
-const { asyncForEach } = require('../shared/asyncForEach')
+const { asyncForEach } = require('../shared/asyncForEach');
 const { remoteBranchDeletionCallback } = require('./remoteBranchDeletionCallback');
 
 /**
@@ -7,7 +7,11 @@ const { remoteBranchDeletionCallback } = require('./remoteBranchDeletionCallback
  * @returns {array}
  */
 exports.removeSelectedBranches = async (branchesToRemove, remote) => {
-  const successfullyRemovedBranches = await asyncForEach(branchesToRemove, remoteBranchDeletionCallback)
+  let successfullyRemovedBranches = []
+  const branchesAndRemotes = branchesToRemove.map(branch => ({remote, branch,}));
+
+  // make sure all the callbacks have finshed before returning anything
+  successfullyRemovedBranches = await asyncForEach(branchesAndRemotes, remoteBranchDeletionCallback);
 
   return successfullyRemovedBranches;
 }

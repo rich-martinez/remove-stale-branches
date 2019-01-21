@@ -1,12 +1,20 @@
 const simpleGit = require('simple-git/promise');
 
-exports.remoteBranchDeletionCallback = async (branch) => {
+/**
+ * @description This callback is intended to be used in the asyncForEach to removed selected branches.
+ * @param {object} - This represents a branch name and a remote name.
+ * @returns {undefined|string}
+ */
+exports.remoteBranchDeletionCallback = async ({branch, remote}) => {
+  let successfullyRemovedBranch;
   await simpleGit().push(remote, branch, { '--delete': null })
-    .then(success => {
+    .then(() => {
       console.log(`\n"${branch}" was successfully removed.\n`)
-      successfullyRemovedBranches.push(branch)
+      successfullyRemovedBranch = branch;
     })
     .catch((error) => {
       console.error(error)
     })
+
+    return successfullyRemovedBranch;
 }
