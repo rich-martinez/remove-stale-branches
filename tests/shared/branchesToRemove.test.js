@@ -85,7 +85,6 @@ test('User selected branches will not be removed but all other branches will be 
 
 test('Unexpected branch removal strategy value leads to an empy array being returned.', async () => {
   const branchesAvailableForRemoval = ['branch1', 'branch2', 'branch3', 'branch4']
-  const branchesToBeRemoved = ['branch1', 'branch4']
   const unexpectedValue = 'some unexpected value'
   branchRemovalStrategyPrompt.mockReturnValue(unexpectedValue)
 
