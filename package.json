@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Attempt to remove stale branches based on user input.",
   "main": "entry.js",
+  "engines": {
+    "node": "^10.10",
+    "npm": "^6.4.1"
+  },
   "scripts": {
     "test": "jest",
     "coverage": "jest --coverage",
