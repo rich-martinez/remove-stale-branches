@@ -8,11 +8,9 @@ exports.localBranchDeletionCallback = async (branch) => {
   let successfullyRemovedBranch
 
   await simpleGit().deleteLocalBranch(branch)
-    .then((branchDeletionSummary) => {
-      if (branchDeletionSummary.success) {
-        successfullyRemovedBranch = branchDeletionSummary.branch
+    .then(({branch}) => {
+        successfullyRemovedBranch = branch
         console.log(`\n"${successfullyRemovedBranch}" was successfully removed.\n`)
-      }
     })
     .catch((error) => {
       console.error(error)

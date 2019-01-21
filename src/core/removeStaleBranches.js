@@ -29,6 +29,8 @@ exports.removeStaleBranches = async () => {
       previouslyRemovedBranches.remoteBranches = previouslyRemovedBranches.remoteBranches.concat(
         removedRemoteBranches
       )
+    } else {
+      console.error(`'${stalenessRemovalOptionsAnswer}' is not an available branch removal option. Please try again.`);
     }
 
     removeStalenessContinuationAnswer = await removeStalenessContinuationPrompt()

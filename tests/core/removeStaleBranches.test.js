@@ -10,7 +10,10 @@ jest.mock('../../src/local-branches/localBranchRemoval')
 jest.mock('../../src/remote-branches/remoteBranchRemoval')
 jest.mock('../../src/core/prompts/staleness-removal-continuation/removeStalenessContinuationPrompt')
 
-global.console = { log: jest.fn() }
+global.console = {
+  log: jest.fn(),
+  error: jest.fn(),
+};
 
 test('User runs local branch removal and then runs remote branch removal.', async () => {
   const removedLocalBranches = ['local-branch-one', 'local-branch-two']
@@ -55,4 +58,24 @@ test('User runs local branch removal and then runs remote branch removal.', asyn
   expect(console.log).toBeCalledWith(`\n\nThat's a wrap.\n\n`)
 
   expect.assertions(12)
+})
+
+test('User tries to runs an unavailable branch removal option.', async () => {
+  const unavailableRemovalOption = 'blah blah blah blah';
+
+  stalenessRemovalOptionsPrompt
+    .mockReturnValueOnce(unavailableRemovalOption);
+  removeStalenessContinuationPrompt
+    .mockReturnValueOnce(false);
+
+  await removeStaleBranches()
+
+  expect(stalenessRemovalOptionsPrompt).nthReturnedWith(1, unavailableRemovalOption);
+  expect(removeStalenessContinuationPrompt).toBeCalledTimes(1)
+  expect(removeStalenessContinuationPrompt).nthReturnedWith(1, false)
+  expect(console.error).toBeCalledTimes(1);
+  expect(console.error).toBeCalledWith(`'${unavailableRemovalOption}' is not an available branch removal option. Please try again.`);
+  expect(console.log).toBeCalledWith(`\n\nThat's a wrap.\n\n`);
+
+  expect.assertions(6);
 })
