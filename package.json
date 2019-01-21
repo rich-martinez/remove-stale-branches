@@ -1,5 +1,6 @@
 {
   "name": "remove-stale-branches",
+  "author": "Rich Martinez",
   "version": "1.0.0",
   "description": "Attempt to remove stale branches based on user input.",
   "main": "entry.js",
@@ -13,6 +14,9 @@
     "lint": "$(npm bin)/standard --fix src/**/*.js tests/**/*.js",
     "generateDocs": "$(npm bin)/documentation build src/** -f md -o docs.md"
   },
+  "bin": {
+    "rsb": "./bin/entry.js"
+  },
   "keywords": [
     "git",
     "branch",
@@ -22,7 +26,6 @@
     "remote",
     "local"
   ],
-  "author": "Rich Martinez",
   "license": "ISC",
   "dependencies": {
     "command-exists": "^1.2.8",
@@ -38,10 +41,6 @@
     "standard": "^12.0.1"
   },
   "standard": {
-    "globals": [
-      "jest",
-      "expect",
-      "test"
-    ]
+    "globals": [ "jest", "expect", "test" ]
   }
 }
