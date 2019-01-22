@@ -4,14 +4,17 @@
 The tool was written using Node 10.10, NPM 6.1.4, and Git 2.18.0. Older versions of Node, NPM, and Git may work but they have not yet been tested.
 
 ## Installation
+The Remove Stale Branches executable works best when it is installed globally.
 ```
-git clone git@github.com:richardmartinez/remove-stale-branches.git
+npm i -g remove-stale-branches
 ```
 
 ## Use
-From the directory (i.e. git repository) that you wish to remove stale branches from execute [entry.js](https://github.com/richardmartinez/remove-stale-branches/blob/master/entry.js).
+Run the `rsb` (i.e. Remove Stale Branches) command from the repository that you wish to remove stale branches from.
+
+### Example
 ```
-~/path/to/entry.js
+cd /path/to/repository && rsb
 ```
 
 ## Forthcoming Features
