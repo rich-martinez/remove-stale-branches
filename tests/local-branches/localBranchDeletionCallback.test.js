@@ -9,19 +9,20 @@ global.console = {
 }
 
 const branchName = 'test'
+const simpleGitBranchOptions = ['-D', branchName]
 
 test('The branch was successfully removed', async () => {
   // const consoleError = 'Something went wrong with deleting the branch';
-  const simpleGitDeleteLocalBranch = jest.fn((branch) => {
-    return Promise.resolve({ branch, success: true })
+  const simpleGitBranch = jest.fn((options) => {
+    return Promise.resolve({ branch: branchName })
   })
-  simpleGit.mockReturnValue({ deleteLocalBranch: simpleGitDeleteLocalBranch })
+  simpleGit.mockReturnValue({ branch: simpleGitBranch })
 
   const removedBranch = await localBranchDeletionCallback(branchName)
 
   expect(simpleGit).toBeCalledTimes(1)
-  expect(simpleGitDeleteLocalBranch).toBeCalledTimes(1)
-  expect(simpleGitDeleteLocalBranch).toBeCalledWith(branchName)
+  expect(simpleGitBranch).toBeCalledTimes(1)
+  expect(simpleGitBranch).toBeCalledWith(simpleGitBranchOptions)
   expect(removedBranch).toEqual(branchName)
   expect(console.log).toBeCalledTimes(1)
   expect(console.log).toBeCalledWith(`\n"test" was successfully removed.\n`)
@@ -29,16 +30,16 @@ test('The branch was successfully removed', async () => {
 
 test('Deleting a local branch promise is rejected.', async () => {
   const consoleError = 'Something went wrong with deleting the branch'
-  const simpleGitDeleteLocalBranch = jest.fn((branch) => {
+  const simpleGitBranch = jest.fn((options) => {
     return Promise.reject(consoleError)
   })
-  simpleGit.mockReturnValue({ deleteLocalBranch: simpleGitDeleteLocalBranch })
+  simpleGit.mockReturnValue({ branch: simpleGitBranch })
 
   const removedBranch = await localBranchDeletionCallback(branchName)
 
   expect(simpleGit).toBeCalledTimes(1)
-  expect(simpleGitDeleteLocalBranch).toBeCalledTimes(1)
-  expect(simpleGitDeleteLocalBranch).toBeCalledWith(branchName)
+  expect(simpleGitBranch).toBeCalledTimes(1)
+  expect(simpleGitBranch).toBeCalledWith(simpleGitBranchOptions)
   expect(removedBranch).toEqual(undefined)
   expect(console.error).toBeCalledTimes(1)
   expect(console.error).toBeCalledWith(consoleError)
