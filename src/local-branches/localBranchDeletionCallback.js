@@ -7,7 +7,7 @@ const simpleGit = require('simple-git/promise')
 exports.localBranchDeletionCallback = async (branch) => {
   let successfullyRemovedBranch
 
-  await simpleGit().deleteLocalBranch(branch)
+  await simpleGit().branch(['-D', branch])
     .then(({ branch }) => {
       successfullyRemovedBranch = branch
       console.log(`\n"${successfullyRemovedBranch}" was successfully removed.\n`)
