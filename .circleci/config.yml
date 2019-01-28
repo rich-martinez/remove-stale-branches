@@ -1,0 +1,11 @@
+version: 2
+
+jobs:
+    build:
+        docker:
+            - image: node:10.10.0-alpine
+        steps:
+            - checkout
+            - run:
+                name: Install All Node Dependencies and Run Unit Test Coverage
+                command: npm ci && npm run coverage
