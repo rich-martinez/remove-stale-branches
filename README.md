@@ -1,4 +1,5 @@
 # Remove Stale Branches
+[![Coverage Status](https://coveralls.io/repos/github/richardmartinez/remove-stale-branches/badge.svg?branch=master)](https://coveralls.io/github/richardmartinez/remove-stale-branches?branch=master)
 
 ## Requirements
 The tool was written using Node 10.10, NPM 6.1.4, and Git 2.18.0. Older versions of Node, NPM, and Git may work but they have not yet been tested.
