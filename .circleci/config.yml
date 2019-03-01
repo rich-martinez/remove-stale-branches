@@ -7,5 +7,10 @@ jobs:
         steps:
             - checkout
             - run:
-                name: Install All Node Dependencies and Run Unit Test Coverage
-                command: npm ci && npm run coverage
+                name: Install All Node Dependencies
+                command: npm ci 
+            - run:
+                name: Run Unit Test Coverage and Collect Coverage Reports
+                command: npm run coverage
+            - store_artifacts:
+                path: coverage
