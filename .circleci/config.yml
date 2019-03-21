@@ -3,7 +3,7 @@ version: 2
 jobs:
     build:
         docker:
-            - image: node:10.10.0-alpine
+            - image: richmartinez/alpine-node-ca:1.0.0
         steps:
             - checkout
             - run:
