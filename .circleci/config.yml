@@ -1,0 +1,16 @@
+version: 2
+
+jobs:
+    build:
+        docker:
+            - image: richmartinez/alpine-node-ca:1.0.0
+        steps:
+            - checkout
+            - run:
+                name: Install All Node Dependencies
+                command: npm ci 
+            - run:
+                name: Run Unit Test Coverage and Collect Coverage Reports
+                command: npm run coverage
+            - store_artifacts:
+                path: coverage
