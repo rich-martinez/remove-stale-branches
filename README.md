@@ -1,5 +1,5 @@
 # Remove Stale Branches
-![CircleCI](https://img.shields.io/circleci/build/github/richardmartinez/remove-stale-branches.svg)
+[![CircleCI](https://circleci.com/gh/richardmartinez/remove-stale-branches.svg?style=shield)](https://circleci.com/gh/richardmartinez/remove-stale-branches)
 
 ## Requirements
 The tool was written using Node 10.10, NPM 6.1.4, and Git 2.18.0. Older versions of Node, NPM, and Git may work but they have not yet been tested.
