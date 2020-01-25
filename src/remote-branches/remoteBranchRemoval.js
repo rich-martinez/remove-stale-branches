@@ -6,12 +6,9 @@ const { branchesAvailableForRemoval } = require('./branchesAvailableForRemoval')
 const { branchesToRemove } = require('../shared/branchesToRemove')
 
 /**
- * @param {object} previouslyRemovedBranches - This is intended to be used to provide an additional option
- *  for the branches to remove prompt. For instance, removing branches remotely that have already been
- * removed locally.
  * @returns {array}
  */
-exports.runRemoteBranchRemoval = async (previouslyRemovedBranches) => {
+exports.runRemoteBranchRemoval = async () => {
   if (await isGitSafeRepository() === false) {
     console.error('\n\nThis command only works if it is run from a git repository.\n\n')
     return process.exit(1)
@@ -26,8 +23,7 @@ exports.runRemoteBranchRemoval = async (previouslyRemovedBranches) => {
   }
 
   const remoteNameAnswer = await remoteNamePrompt(remotes)
-  const remoteNameIdentifier = `${remoteNameAnswer}/`
-  const allBranchesAvailableForRemoval = await branchesAvailableForRemoval(remoteNameIdentifier)
+  const allBranchesAvailableForRemoval = await branchesAvailableForRemoval(remoteNameAnswer)
 
   if (allBranchesAvailableForRemoval.length === 0) {
     console.log('\nThere are no branches in that remote that are available for removal.\n')
