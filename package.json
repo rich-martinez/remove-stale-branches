@@ -34,7 +34,7 @@
     "inquirer": "^6.2.0",
     "inquirer-autocomplete-prompt": "^1.0.1",
     "inquirer-checkbox-plus-prompt": "^1.0.1",
-    "simple-git": "^1.106.0"
+    "simple-git": "^3.5.0"
   },
   "devDependencies": {
     "jest": "^24.8.0",
